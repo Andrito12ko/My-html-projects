@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Architect Terminal | Ultra Edition</title>
+    <style>
+        :root {
+            --neon-green: #39ff14;
+            --bg-black: #050505;
+            --sidebar-bg: rgba(0, 255, 0, 0.02);
+            --border: var(--neon-green);
+            --terminal-font: "Courier New", monospace;
+            --small: 0.7rem;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            background-color: var(--bg-black);
+            color: var(--neon-green);
+            font-family: var(--terminal-font);
+            display: grid;
+            grid-template-columns: 300px 1fr 250px;
+            overflow: hidden;
+        }
+
+        /* PANELS */
+        .panel {
+            border: 1px solid var(--border);
+            padding: 15px;
+            background: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-decoration: underline;
+        }
+
+        .panel-files {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            padding: 8px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            border-bottom: 1px solid rgba(57, 255, 20, 0.1);
+        }
+
+            .file-item:hover {
+                background: rgba(57, 255, 20, 0.1);
+            }
+
+        .file-highlight {
+            background: var(--neon-green);
+            color: black;
+            font-weight: bold;
+        }
+
+        /* MONITOR PANEL */
+        .panel-monitor {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .monitor-title {
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .monitor-stat {
+            margin-bottom: 15px;
+        }
+
+        .monitor-label {
+            margin-bottom: 5px;
+            font-size: var(--small);
+        }
+
+        .bar-bg {
+            width: 100%;
+            height: 10px;
+            background: #222;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: var(--neon-green);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .history-header {
+            margin-bottom: 5px;
+        }
+
+        .history-list {
+            font-size: var(--small);
+            opacity: 0.6;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .history-line {
+            margin-bottom: 2px;
+        }
+
+        /* TERMINAL */
+        #terminal {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+            cursor: text;
+        }
+
+        #output {
+            flex: 1;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .prompt {
+            color: var(--neon-green);
+            flex-shrink: 0;
+            margin-right: 10px;
+        }
+
+        #cmd {
+            background: transparent;
+            border: none;
+            border-radius: 2px;
+            color: var(--neon-green);
+            font-family: var(--terminal-font);
+            font-size: inherit;
+            width: 100%;
+            outline: none;
+        }
+
+        /* FOCUS VISUALS */
+        #terminal:focus {
+            outline: 1px solid var(--neon-green);
+            border-radius: 4px;
+        }
+
+        /* MEDIAQUERY – MOBILE / NARROW */
+        @media (max-width: 900px) {
+            body {
+                grid-template-columns: 1fr;
+            }
+
+            .panel,
+            .panel-monitor {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- FILES PANEL -->
+    <aside class="panel">
+        <h3 class="panel-header">FILESYSTEM</h3>
+        <div class="panel-files">
+            <div class="file-item" id="file-readme">readme.txt</div>
+            <div class="file-item" id="file-data">database_dump.sql</div>
+            <div class="file-item" id="file-os">lava_core_v2.bin</div>
+        </div>
+    </aside>
+
+    <!-- TERMINAL -->
+    <div id="terminal" tabindex="0" onclick="document.getElementById('cmd').focus()">
+        <div id="output">
+            SYSTEM BOOT SUCCESSFUL...
+            READY FOR INPUT. TYPE 'HELP' FOR COMMANDS.
+        </div>
+        <div class="input-line">
+            <span class="prompt">arch@lava:~$</span>
+            <input type="text" id="cmd" autocomplete="off" autofocus onkeydown="handleInput(event)" />
+        </div>
+    </div>
+
+    <!-- MONITOR PANEL -->
+    <aside class="panel panel-monitor">
+        <h3 class="monitor-title">MONITOR</h3>
+
+        <div class="monitor-stat">
+            <small class="monitor-label">CPU USAGE</small>
+            <div class="bar-bg">
+                <div id="cpu-bar" class="bar-fill"></div>
+            </div>
+        </div>
+
+        <div class="monitor-stat">
+            <small class="monitor-label">RAM LOAD</small>
+            <div class="bar-bg">
+                <div id="ram-bar" class="bar-fill"></div>
+            </div>
+        </div>
+
+        <h4 class="history-header">COMMAND HISTORY:</h4>
+        <div class="history-list" id="history-list">
+            <!-- Izeja caur JS -->
+        </div>
+    </aside>
+
+    <script>
+        const output = document.getElementById("output");
+        const cmdInput = document.getElementById("cmd");
+        const cpuBar = document.getElementById("cpu-bar");
+        const ramBar = document.getElementById("ram-bar");
+        const historyList = [];
+        let historyIndex = -1;
+
+        // --- 1. KOMANDU APSTRĀDE ---
+        function handleInput(e) {
+            if (e.key === "Enter") {
+                const cmd = cmdInput.value.trim();
+                if (!cmd) return;
+
+                print(`arch@lava:~$ ${cmd}`);
+                processCommand(cmd.trim());
+
+                if (!historyList.includes(cmd)) {
+                    historyList.push(cmd);
+                    updateHistoryUI();
+                }
+                historyIndex = historyList.length;
+                cmdInput.value = "";
+            } else if (e.key === "ArrowUp") {
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    cmdInput.value = historyList[historyIndex];
+                }
+            } else if (e.key === "ArrowDown") {
+                if (historyIndex < historyList.length - 1) {
+                    historyIndex++;
+                    cmdInput.value = historyList[historyIndex];
+                } else {
+                    historyIndex = historyList.length;
+                    cmdInput.value = "";
+                }
+            }
+        }
+
+        function processCommand(cmd) {
+            const lower = cmd.toLowerCase().trim();
+
+            if (lower === "help") {
+                print("Commands: help, clear, status, download [file], scan, reset");
+            } else if (lower === "clear") {
+                output.innerText = "System cleared.";
+            } else if (lower === "reset") {
+                output.innerText = "SYSTEM BOOT SUCCESSFUL...\nREADY FOR INPUT. TYPE 'HELP' FOR COMMANDS.";
+            } else if (lower === "status") {
+                print("Status: Online. All systems nominal.");
+            } else if (lower.startsWith("download ")) {
+                const file = lower.slice("download ".length).trim();
+                if (file) {
+                    simulateDownload(file);
+                } else {
+                    print("ERROR: Missing filename after 'download'.");
+                }
+            } else if (lower === "scan") {
+                print("Scanning for vulnerabilities...");
+                setTimeout(() => {
+                    print("Result: [SAFE] No threats found.");
+                }, 1500);
+            } else {
+                print(`Unknown command: ${cmd}`);
+            }
+        }
+
+        // --- 2. IZVADA FUNKCIJAS ---
+        function print(text) {
+            output.innerText += "\n" + text;
+            const terminal = document.getElementById("terminal");
+            terminal.scrollTop = output.scrollHeight;
+        }
+
+        function simulateDownload(name) {
+            print("Connecting to server...");
+            let progress = 0;
+
+            const interval = setInterval(() => {
+                progress += 10;
+
+                const filled = "#".repeat(Math.floor(progress / 10));
+                const empty = ".".repeat(10 - Math.floor(progress / 10));
+                print(`\u{25B6} Downloading ${name}: [${filled}${empty}] ${progress}%`);
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    print(`SUCCESS: ${name} saved to local storage.`);
+                }
+            }, 400);
+        }
+
+        // --- 3. VĒSTURE UI ---
+        function updateHistoryUI() {
+            const display = document.getElementById("history-list");
+            const last5 = historyList.slice(-5);
+
+            const html = last5.map(line => {
+                return `<div class="history-line">${line}</div>`;
+            }).join("");
+
+            display.innerHTML = html;
+        }
+
+        // --- 4. MONITORA SIMULACIJA ---
+        setInterval(() => {
+            cpuBar.style.width = `${Math.floor(Math.random() * 100)}%`;
+            ramBar.style.width = `${Math.floor(Math.random() * 100)}%`;
+        }, 2000);
+
+        // --- 5. FILE CLICK HIGHLIGHT ---
+        document.querySelectorAll(".file-item").forEach(el => {
+            el.addEventListener("click", () => {
+                document
+                    .querySelector(".file-item.file-highlight")
+                    ?.classList.remove("file-highlight");
+                el.classList.add("file-highlight");
+                const filename = el.textContent.trim();
+                print(`Loaded file: ${filename}`);
+            });
+        });
+    </script>
+</body>
+</html>
