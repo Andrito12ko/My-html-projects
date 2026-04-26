@@ -1,0 +1,642 @@
+D:\Andris\Music\html\Food Place.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sega Mega Burger | Pro Ordering</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --sega-blue: #0054a6;
+            --accent: #ff4500;
+            --bg: #f0f2f5;
+            --dark: #1a1a1a;
+            --light-gray: #eee;
+            --border-gray: #ddd;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+            color: var(--dark);
+        }
+
+        /* HEADER */
+        header {
+            grid-column: 1 / -1;
+            background: var(--dark);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--sega-blue);
+            z-index: 100;
+        }
+
+            header h1 {
+                font-size: 1.5rem;
+                letter-spacing: 2px;
+            }
+
+            header p {
+                font-size: 0.95rem;
+            }
+
+        /* MAIN CONTENT */
+        main {
+            grid-column: 1;
+            grid-row: 2;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .banner {
+            background: linear-gradient(135deg, var(--sega-blue), #002d5a);
+            color: white;
+            padding: 50px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+            .banner h2 {
+                font-size: 2rem;
+                margin-bottom: 15px;
+            }
+
+        main > h2 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: var(--dark);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+        }
+
+            .menu-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+                border-bottom-color: var(--sega-blue);
+            }
+
+            .menu-card h3 {
+                font-size: 1.2rem;
+                margin-bottom: 10px;
+                color: var(--dark);
+            }
+
+            .menu-card p {
+                font-size: 0.9rem;
+                color: #666;
+                margin-bottom: 15px;
+                line-height: 1.4;
+            }
+
+            .menu-card .price {
+                font-size: 1.4rem;
+                font-weight: bold;
+                color: var(--sega-blue);
+                margin-bottom: 15px;
+            }
+
+            .menu-card button {
+                width: 100%;
+                padding: 12px;
+                background: var(--sega-blue);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: bold;
+                cursor: pointer;
+                font-size: 0.95rem;
+                text-transform: uppercase;
+                transition: all 0.2s;
+            }
+
+                .menu-card button:hover {
+                    background: var(--accent);
+                    transform: scale(1.02);
+                }
+
+                .menu-card button:active {
+                    transform: scale(0.98);
+                }
+
+        /* SIDEBAR / CART */
+        .sidebar {
+            grid-column: 2;
+            grid-row: 2;
+            background: white;
+            border-left: 2px solid var(--border-gray);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.08);
+            overflow-y: auto;
+        }
+
+            .sidebar h2 {
+                font-size: 1.3rem;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+        .cart-items-container {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 10px;
+        }
+
+            .cart-items-container::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .cart-items-container::-webkit-scrollbar-track {
+                background: var(--light-gray);
+                border-radius: 10px;
+            }
+
+            .cart-items-container::-webkit-scrollbar-thumb {
+                background: var(--sega-blue);
+                border-radius: 10px;
+            }
+
+        .cart-empty {
+            color: #999;
+            text-align: center;
+            padding: 30px 10px;
+            font-style: italic;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--light-gray);
+            animation: slideIn 0.3s ease;
+            gap: 10px;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--dark);
+        }
+
+        .cart-item-qty {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 3px;
+        }
+
+        .cart-item-price {
+            font-weight: bold;
+            color: var(--sega-blue);
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .cart-item-remove {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            cursor: pointer;
+            font-size: 1.3rem;
+            padding: 0;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+
+            .cart-item-remove:hover {
+                color: var(--accent);
+            }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .form-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid var(--light-gray);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+            .form-group label {
+                display: block;
+                font-weight: 600;
+                margin-bottom: 6px;
+                font-size: 0.9rem;
+            }
+
+            .form-group input,
+            .form-group textarea {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid var(--border-gray);
+                border-radius: 6px;
+                font-family: inherit;
+                font-size: 0.9rem;
+                transition: border-color 0.2s;
+            }
+
+                .form-group input:focus,
+                .form-group textarea:focus {
+                    outline: none;
+                    border-color: var(--sega-blue);
+                    box-shadow: 0 0 0 3px rgba(0, 84, 166, 0.1);
+                }
+
+            .form-group textarea {
+                resize: vertical;
+                min-height: 60px;
+            }
+
+        .total-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: var(--bg);
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+            .total-section span:last-child {
+                color: var(--sega-blue);
+                font-size: 1.3rem;
+            }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--sega-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+            .submit-btn:hover:not(:disabled) {
+                background: var(--accent);
+                transform: scale(1.02);
+            }
+
+            .submit-btn:disabled {
+                background: #ccc;
+                cursor: not-allowed;
+                opacity: 0.6;
+            }
+
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+            .success-msg.show {
+                display: block;
+            }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            body {
+                grid-template-columns: 1fr 320px;
+            }
+
+            main {
+                padding: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+            }
+
+            main {
+                grid-column: 1;
+                grid-row: 2;
+                padding: 20px;
+            }
+
+            .sidebar {
+                grid-column: 1;
+                grid-row: 3;
+                border-left: none;
+                border-top: 2px solid var(--border-gray);
+                max-height: 50vh;
+                padding: 15px;
+            }
+
+                .sidebar h2 {
+                    font-size: 1.1rem;
+                    margin-bottom: 15px;
+                }
+
+            .menu-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 15px;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+                padding: 15px;
+            }
+
+                header h1 {
+                    font-size: 1.2rem;
+                }
+
+            .banner {
+                padding: 30px;
+                margin-bottom: 25px;
+            }
+
+                .banner h2 {
+                    font-size: 1.5rem;
+                }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🍔 SEGA MEGA BURGER</h1>
+        <p>10:00 - 22:00 | Riga</p>
+    </header>
+
+    <main>
+        <div class="banner">
+            <h2>🔥 MONTHLY SPECIAL</h2>
+            <p>The Sega Mega Burger is now available with extra cheddar!</p>
+        </div>
+
+        <h2>Select Your Items</h2>
+        <div class="menu-grid" id="menuGrid"></div>
+    </main>
+
+    <aside class="sidebar">
+        <h2>Your Order</h2>
+        <div id="successMsg" class="success-msg"></div>
+
+        <div class="cart-items-container" id="cartContainer">
+            <div class="cart-empty">Your cart is empty...</div>
+        </div>
+
+        <form id="orderForm" class="form-section">
+            <div class="form-group">
+                <label for="customerName">Name:</label>
+                <input type="text" id="customerName" placeholder="Who is ordering?" required>
+            </div>
+
+            <div class="form-group">
+                <label for="customerNotes">Special Requests:</label>
+                <textarea id="customerNotes" placeholder="No onions, extra sauce, etc."></textarea>
+            </div>
+
+            <div class="total-section">
+                <span>Total:</span>
+                <span id="totalPrice">€0.00</span>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                Submit Order to Architect
+            </button>
+        </form>
+    </aside>
+
+    <script>
+        // Menu Data
+        const menuItems = [
+            { id: 1, name: "Classic Architect", price: 8.50, desc: "Beef, Lettuce, Tomato, Special Sauce" },
+            { id: 2, name: "Bacon Bypass", price: 10.00, desc: "Double Beef, Triple Bacon, Cheddar" },
+            { id: 3, name: "The Glitch (Veggie)", price: 9.00, desc: "Portobello, Halloumi, Spinach" },
+            { id: 4, name: "Craft Root Beer", price: 3.50, desc: "Chilled home-brew" }
+        ];
+
+        // Cart Management
+        const cart = {
+            items: [],
+
+            add(id) {
+                const item = menuItems.find(m => m.id === id);
+                const existing = this.items.find(c => c.id === id);
+
+                if (existing) {
+                    existing.quantity += 1;
+                } else {
+                    this.items.push({ ...item, quantity: 1 });
+                }
+                this.save();
+                this.render();
+            },
+
+            remove(id) {
+                this.items = this.items.filter(item => item.id !== id);
+                this.save();
+                this.render();
+            },
+
+            clear() {
+                this.items = [];
+                this.save();
+                this.render();
+            },
+
+            getTotal() {
+                return this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            },
+
+            save() {
+                localStorage.setItem('sega_cart', JSON.stringify(this.items));
+            },
+
+            load() {
+                const saved = localStorage.getItem('sega_cart');
+                this.items = saved ? JSON.parse(saved) : [];
+            },
+
+            render() {
+                const container = document.getElementById('cartContainer');
+                const totalEl = document.getElementById('totalPrice');
+                const submitBtn = document.getElementById('submitBtn');
+                const nameInput = document.getElementById('customerName');
+
+                if (this.items.length === 0) {
+                    container.innerHTML = '<div class="cart-empty">Your cart is empty...</div>';
+                    submitBtn.disabled = true;
+                } else {
+                    container.innerHTML = this.items.map(item => `
+                            <div class="cart-item">
+                                <div class="cart-item-info">
+                                    <div class="cart-item-name">${item.name}</div>
+                                    <div class="cart-item-qty">Qty: ${item.quantity}</div>
+                                </div>
+                                <div class="cart-item-price">€${(item.price * item.quantity).toFixed(2)}</div>
+                                <button type="button" class="cart-item-remove" data-id="${item.id}">×</button>
+                            </div>
+                        `).join('');
+                    submitBtn.disabled = !nameInput.value.trim();
+                }
+
+                totalEl.textContent = `€${this.getTotal().toFixed(2)}`;
+            }
+        };
+
+        // DOM Elements
+        const menuGrid = document.getElementById('menuGrid');
+        const cartContainer = document.getElementById('cartContainer');
+        const orderForm = document.getElementById('orderForm');
+        const customerName = document.getElementById('customerName');
+        const customerNotes = document.getElementById('customerNotes');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMsg = document.getElementById('successMsg');
+
+        // Render Menu
+        function renderMenu() {
+            menuGrid.innerHTML = menuItems.map(item => `
+                    <div class="menu-card">
+                        <h3>${item.name}</h3>
+                        <p>${item.desc}</p>
+                        <div class="price">€${item.price.toFixed(2)}</div>
+                        <button type="button" class="add-btn" data-id="${item.id}">+ Add to Order</button>
+                    </div>
+                `).join('');
+
+            // Add event listeners to menu buttons
+            document.querySelectorAll('.add-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(e.target.dataset.id);
+                    cart.add(id);
+                });
+            });
+        }
+
+        // Cart container event delegation
+        cartContainer.addEventListener('click', (e) => {
+            const removeBtn = e.target.closest('.cart-item-remove');
+            if (removeBtn) {
+                const id = parseInt(removeBtn.dataset.id);
+                cart.remove(id);
+            }
+        });
+
+        // Form submission
+        orderForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = customerName.value.trim();
+
+            if (!name) {
+                alert('Please enter your name!');
+                return;
+            }
+
+            if (cart.items.length === 0) {
+                alert('Please add items to your cart!');
+                return;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Processing...';
+
+            // Simulate submission
+            setTimeout(() => {
+                const msg = `Order received, ${name}! The Architect is cooking your meal. Total: €${cart.getTotal().toFixed(2)}`;
+                successMsg.textContent = msg;
+                successMsg.classList.add('show');
+
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 4000);
+
+                cart.clear();
+                customerName.value = '';
+                customerNotes.value = '';
+                submitBtn.textContent = originalText;
+            }, 1000);
+        });
+
+        // Enable/disable submit button based on name input
+        customerName.addEventListener('input', () => {
+            submitBtn.disabled = !customerName.value.trim() || cart.items.length === 0;
+        });
+
+        // Initialize
+        cart.load();
+        renderMenu();
+        cart.render();
+    </script>
+
+</body>
+</html>

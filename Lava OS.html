@@ -1,0 +1,1005 @@
+D:\Andris\Music\html\Lava OS.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lava OS | Advanced Desktop Environment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0054a6;
+            --accent: #ff4500;
+            --dark: #1a1a1a;
+            --darker: #0a0a0a;
+            --light: #f0f0f0;
+            --text: #333;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-attachment: fixed;
+            position: relative;
+        }
+
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(circle at 20% 50%, rgba(255, 69, 0, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(0, 84, 166, 0.1) 0%, transparent 50%);
+                pointer-events: none;
+                z-index: 0;
+            }
+
+        /* DESKTOP */
+        .desktop {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* DESKTOP ICONS */
+        .icon-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            z-index: 10;
+        }
+
+        .desktop-icon {
+            width: 100px;
+            text-align: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+            .desktop-icon:hover {
+                transform: scale(1.1);
+            }
+
+            .desktop-icon img {
+                width: 60px;
+                height: 60px;
+                filter: drop-shadow(0 0 10px rgba(255, 69, 0, 0.5));
+                transition: all 0.2s ease;
+                margin-bottom: 8px;
+            }
+
+            .desktop-icon:hover img {
+                filter: drop-shadow(0 0 20px rgba(255, 69, 0, 0.8));
+                transform: scale(1.1);
+            }
+
+            .desktop-icon label {
+                font-size: 0.85rem;
+                font-weight: 600;
+                display: block;
+                margin-top: 8px;
+            }
+
+        /* WINDOWS */
+        .window {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 84, 166, 0.2);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+            .window.active {
+                display: flex;
+                z-index: 1000;
+            }
+
+            .window.minimized {
+                display: none !important;
+            }
+
+        .title-bar {
+            background: linear-gradient(to right, var(--primary), #0038a6);
+            color: white;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            user-select: none;
+            cursor: move;
+            gap: 10px;
+        }
+
+        .title-bar-title {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        .win-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .win-btn {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+            .win-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+        .win-btn-close:hover {
+            background: #ff4444;
+            color: white;
+        }
+
+        .window-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+            background: #fafafa;
+        }
+
+            .window-content::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .window-content::-webkit-scrollbar-track {
+                background: #e0e0e0;
+            }
+
+            .window-content::-webkit-scrollbar-thumb {
+                background: var(--accent);
+                border-radius: 4px;
+            }
+
+                .window-content::-webkit-scrollbar-thumb:hover {
+                    background: #ff5722;
+                }
+
+        /* FILE EXPLORER CONTENT */
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+
+            .file-item:hover {
+                background: rgba(0, 84, 166, 0.08);
+            }
+
+        .file-icon {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            width: 30px;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .file-size {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 3px;
+        }
+
+        /* ABOUT WINDOW */
+        .about-content {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .about-logo {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .about-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .about-info {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .about-specs {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+            .spec-item:last-child {
+                border-bottom: none;
+            }
+
+        /* SETTINGS WINDOW */
+        .settings-group {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+            .settings-group:last-child {
+                border-bottom: none;
+            }
+
+        .settings-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .setting-label {
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .toggle-switch {
+            width: 50px;
+            height: 26px;
+            background: #ccc;
+            border-radius: 13px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+            .toggle-switch.active {
+                background: var(--accent);
+            }
+
+        .toggle-circle {
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active .toggle-circle {
+            left: 26px;
+        }
+
+        /* START MENU */
+        #start-menu {
+            position: fixed;
+            bottom: 55px;
+            left: 10px;
+            width: 280px;
+            background: rgba(255, 255, 255, 0.98);
+            border: 2px solid var(--primary);
+            display: none;
+            flex-direction: column;
+            z-index: 2000;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+            #start-menu.active {
+                display: flex;
+            }
+
+        .menu-header {
+            background: linear-gradient(to right, var(--primary), #0038a6);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .menu-section {
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+            .menu-section:last-child {
+                border-bottom: none;
+            }
+
+        .menu-item {
+            color: var(--text);
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.9rem;
+        }
+
+            .menu-item:hover {
+                background: rgba(0, 84, 166, 0.1);
+                padding-left: 25px;
+            }
+
+        .menu-icon {
+            font-size: 1.1rem;
+        }
+
+        /* TASKBAR */
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            box-sizing: border-box;
+            z-index: 3000;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .taskbar-left {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .start-btn {
+            background: linear-gradient(to right, var(--accent), #ff6b35);
+            color: white;
+            padding: 8px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+            .start-btn:hover {
+                transform: scale(1.05);
+                box-shadow: 0 5px 15px rgba(255, 69, 0, 0.4);
+            }
+
+        .taskbar-item {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+            .taskbar-item:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+            .taskbar-item.active {
+                background: var(--accent);
+                border-color: var(--accent);
+            }
+
+        .taskbar-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .clock {
+            font-weight: bold;
+            min-width: 50px;
+        }
+
+        /* SYSTEM TRAY */
+        .system-tray {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .tray-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+            .tray-icon:hover {
+                transform: scale(1.2);
+                filter: drop-shadow(0 0 5px rgba(255, 69, 0, 0.5));
+            }
+
+        /* MODAL */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+        }
+
+            .modal.active {
+                display: flex;
+            }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 300px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .modal-text {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .modal-btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+            .modal-btn-primary:hover {
+                background: #ff6b35;
+            }
+
+        .modal-btn-secondary {
+            background: #e0e0e0;
+            color: var(--text);
+        }
+
+            .modal-btn-secondary:hover {
+                background: #d0d0d0;
+            }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .desktop-icon label {
+                font-size: 0.7rem;
+            }
+
+            .window {
+                width: 90vw !important;
+                height: 80vh !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+            }
+
+            #start-menu {
+                width: 250px;
+                bottom: 60px;
+            }
+
+            .taskbar {
+                height: 45px;
+                padding: 0 10px;
+            }
+
+            .start-btn {
+                padding: 6px 15px;
+                font-size: 0.7rem;
+            }
+
+            .taskbar-right {
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="desktop">
+        <div class="icon-container">
+            <div class="desktop-icon" onclick="openWindow('file-explorer')">
+                <img src="https://cdn-icons-png.flaticon.com/512/2961/2961248.png" alt="My PC">
+                <label>My PC</label>
+            </div>
+
+            <div class="desktop-icon" onclick="openWindow('about')">
+                <img src="https://cdn-icons-png.flaticon.com/512/3556/3556196.png" alt="About">
+                <label>About</label>
+            </div>
+
+            <div class="desktop-icon" onclick="openWindow('settings')">
+                <img src="https://cdn-icons-png.flaticon.com/512/2040/2040514.png" alt="Settings">
+                <label>Settings</label>
+            </div>
+
+            <div class="desktop-icon" onclick="alert('🌐 Browser coming soon in v2.0')">
+                <img src="https://cdn-icons-png.flaticon.com/512/1144/1144760.png" alt="Browser">
+                <label>Browser</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILE EXPLORER WINDOW -->
+    <div class="window" id="file-explorer" style="width: 600px; height: 400px; top: 100px; left: 50px;">
+        <div class="title-bar">
+            <span class="title-bar-title">📂 File Explorer</span>
+            <div class="win-btns">
+                <div class="win-btn" onclick="minimizeWindow('file-explorer')">_</div>
+                <div class="win-btn win-btn-close" onclick="closeWindow('file-explorer')">×</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="file-item" onclick="alert('Opening Documents folder...')">
+                <div class="file-icon">📁</div>
+                <div class="file-info">
+                    <div class="file-name">Documents</div>
+                    <div class="file-size">Folder</div>
+                </div>
+            </div>
+
+            <div class="file-item" onclick="alert('Opening Downloads folder...')">
+                <div class="file-icon">📁</div>
+                <div class="file-info">
+                    <div class="file-name">Downloads</div>
+                    <div class="file-size">Folder</div>
+                </div>
+            </div>
+
+            <div class="file-item" onclick="alert('Access Denied: Core Files')">
+                <div class="file-icon">🔐</div>
+                <div class="file-info">
+                    <div class="file-name">Core_Architect_Secrets</div>
+                    <div class="file-size">Protected</div>
+                </div>
+            </div>
+
+            <div class="file-item" onclick="alert('Opening Games folder...')">
+                <div class="file-icon">🎮</div>
+                <div class="file-info">
+                    <div class="file-name">Games</div>
+                    <div class="file-size">Folder</div>
+                </div>
+            </div>
+
+            <div class="file-item" onclick="alert('Opening Media folder...')">
+                <div class="file-icon">🎬</div>
+                <div class="file-info">
+                    <div class="file-name">Media</div>
+                    <div class="file-size">Folder</div>
+                </div>
+            </div>
+
+            <div class="file-item" onclick="alert('Opening Projects folder...')">
+                <div class="file-icon">💻</div>
+                <div class="file-info">
+                    <div class="file-name">Projects</div>
+                    <div class="file-size">Folder</div>
+                </div>
+            </div>
+
+            <div class="file-item" onclick="alert('Architect_Config.exe (95 MB)')">
+                <div class="file-icon">⚙️</div>
+                <div class="file-info">
+                    <div class="file-name">Architect_Config.exe</div>
+                    <div class="file-size">95 MB • Application</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABOUT WINDOW -->
+    <div class="window" id="about" style="width: 500px; height: 450px; top: 150px; left: 150px;">
+        <div class="title-bar">
+            <span class="title-bar-title">ℹ️ About Lava OS</span>
+            <div class="win-btns">
+                <div class="win-btn" onclick="minimizeWindow('about')">_</div>
+                <div class="win-btn win-btn-close" onclick="closeWindow('about')">×</div>
+            </div>
+        </div>
+        <div class="window-content about-content">
+            <div class="about-logo">🌋</div>
+            <div class="about-title">Lava OS v2.0</div>
+            <div class="about-info">
+                Advanced Desktop Environment for ARCHITECT Core Systems<br>
+                Powered by cutting-edge technology
+            </div>
+
+            <div class="about-specs">
+                <div class="spec-item">
+                    <span>🏢 Developer:</span>
+                    <span>ARCHITECT CORE SYSTEMS</span>
+                </div>
+                <div class="spec-item">
+                    <span>📅 Release Date:</span>
+                    <span>April 26, 2026</span>
+                </div>
+                <div class="spec-item">
+                    <span>⚙️ Version:</span>
+                    <span>2.0.0</span>
+                </div>
+                <div class="spec-item">
+                    <span>📊 Build:</span>
+                    <span>LAVA-2026-ULTRA</span>
+                </div>
+                <div class="spec-item">
+                    <span>🔐 License:</span>
+                    <span>Proprietary</span>
+                </div>
+                <div class="spec-item">
+                    <span>💾 Storage:</span>
+                    <span>2.4 TB / 10 TB</span>
+                </div>
+                <div class="spec-item">
+                    <span>⚡ Status:</span>
+                    <span style="color: #39ff14;">ONLINE</span>
+                </div>
+            </div>
+
+            <div style="font-size: 0.8rem; color: #999; margin-top: 15px;">
+                © 2026 ARCHITECT CORE SYSTEMS. All rights reserved.
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS WINDOW -->
+    <div class="window" id="settings" style="width: 550px; height: 500px; top: 120px; left: 250px;">
+        <div class="title-bar">
+            <span class="title-bar-title">⚙️ Settings</span>
+            <div class="win-btns">
+                <div class="win-btn" onclick="minimizeWindow('settings')">_</div>
+                <div class="win-btn win-btn-close" onclick="closeWindow('settings')">×</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="settings-group">
+                <div class="settings-title">Display</div>
+                <div class="setting-item">
+                    <span class="setting-label">🌙 Dark Mode</span>
+                    <div class="toggle-switch" onclick="toggleDarkMode(this)">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-title">Audio</div>
+                <div class="setting-item">
+                    <span class="setting-label">🔊 System Sounds</span>
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">📢 Notifications</span>
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-title">System</div>
+                <div class="setting-item">
+                    <span class="setting-label">🔄 Auto Updates</span>
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">🔒 Security Mode</span>
+                    <div class="toggle-switch" onclick="this.classList.toggle('active')">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-title">Performance</div>
+                <div class="setting-item">
+                    <span class="setting-label">CPU Usage:</span>
+                    <span style="color: #39ff14; font-weight: bold;">42%</span>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">RAM Usage:</span>
+                    <span style="color: #ff6b6b; font-weight: bold;">6.8 GB / 16 GB</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- START MENU -->
+    <div id="start-menu">
+        <div class="menu-header">🌋 LAVA OS v2.0</div>
+
+        <div class="menu-section">
+            <div class="menu-item" onclick="openWindow('file-explorer'); toggleStart()">
+                <span class="menu-icon">📂</span>
+                <span>File Explorer</span>
+            </div>
+            <div class="menu-item" onclick="alert('🔍 Search feature coming soon')">
+                <span class="menu-icon">🔍</span>
+                <span>Search</span>
+            </div>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-item" onclick="openWindow('settings'); toggleStart()">
+                <span class="menu-icon">⚙️</span>
+                <span>Settings</span>
+            </div>
+            <div class="menu-item" onclick="alert('🛠️ Maintenance mode active')">
+                <span class="menu-icon">🛠️</span>
+                <span>System Tools</span>
+            </div>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-item" onclick="openWindow('about'); toggleStart()">
+                <span class="menu-icon">ℹ️</span>
+                <span>About</span>
+            </div>
+            <div class="menu-item" onclick="showModal('shutdown')">
+                <span class="menu-icon">🔌</span>
+                <span>Shut Down</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- TASKBAR -->
+    <div class="taskbar">
+        <div class="taskbar-left">
+            <button class="start-btn" onclick="toggleStart()">🌋 LAVA</button>
+            <div class="taskbar-item" id="task-file-explorer" onclick="toggleWindow('file-explorer')">📂 File Explorer</div>
+            <div class="taskbar-item" id="task-settings" onclick="toggleWindow('settings')">⚙️ Settings</div>
+            <div class="taskbar-item" id="task-about" onclick="toggleWindow('about')">ℹ️ About</div>
+        </div>
+
+        <div class="taskbar-right">
+            <div class="system-tray">
+                <div class="tray-icon" title="WiFi" onclick="alert('📡 Connected: ARCHITECT_NET')">📡</div>
+                <div class="tray-icon" title="Battery" onclick="alert('🔋 Battery: 87%')">🔋</div>
+                <div class="tray-icon" title="Volume" onclick="alert('🔊 Volume: 75%')">🔊</div>
+            </div>
+            <div class="clock" id="clock">12:00 PM</div>
+        </div>
+    </div>
+
+    <!-- SHUTDOWN MODAL -->
+    <div id="shutdown-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">🔌 Shut Down?</div>
+            <div class="modal-text">Are you sure you want to shut down Lava OS?</div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal('shutdown')">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="shutdownOS()">Shut Down</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Window Management
+        function openWindow(windowId) {
+            const win = document.getElementById(windowId);
+            win.classList.add('active');
+            win.classList.remove('minimized');
+            updateTaskbar(windowId, true);
+        }
+
+        function closeWindow(windowId) {
+            const win = document.getElementById(windowId);
+            win.classList.remove('active');
+            updateTaskbar(windowId, false);
+        }
+
+        function toggleWindow(windowId) {
+            const win = document.getElementById(windowId);
+            if (win.classList.contains('active')) {
+                closeWindow(windowId);
+            } else {
+                openWindow(windowId);
+            }
+        }
+
+        function minimizeWindow(windowId) {
+            const win = document.getElementById(windowId);
+            win.classList.add('minimized');
+            updateTaskbar(windowId, false);
+        }
+
+        function updateTaskbar(windowId, isOpen) {
+            const taskItem = document.getElementById('task-' + windowId);
+            if (taskItem) {
+                if (isOpen) {
+                    taskItem.classList.add('active');
+                } else {
+                    taskItem.classList.remove('active');
+                }
+            }
+        }
+
+        // Start Menu
+        function toggleStart() {
+            const menu = document.getElementById('start-menu');
+            menu.classList.toggle('active');
+        }
+
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('start-menu');
+            if (!e.target.closest('.start-btn') && !e.target.closest('#start-menu')) {
+                menu.classList.remove('active');
+            }
+        });
+
+        // Modal
+        function showModal(modalName) {
+            document.getElementById(modalName + '-modal').classList.add('active');
+            toggleStart();
+        }
+
+        function closeModal(modalName) {
+            document.getElementById(modalName + '-modal').classList.remove('active');
+        }
+
+        // Shutdown
+        function shutdownOS() {
+            alert('💤 Lava OS shutting down...\n\n👋 Goodbye!');
+            closeModal('shutdown');
+        }
+
+        // Dark Mode
+        function toggleDarkMode(element) {
+            element.classList.toggle('active');
+            document.body.style.filter = element.classList.contains('active') ? 'invert(1)' : 'none';
+        }
+
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Draggable Windows
+        let draggedWindow = null;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        document.querySelectorAll('.title-bar').forEach(titleBar => {
+            titleBar.addEventListener('mousedown', (e) => {
+                draggedWindow = e.target.closest('.window');
+                const rect = draggedWindow.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+                draggedWindow.style.zIndex = 1001;
+            });
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (draggedWindow) {
+                draggedWindow.style.left = (e.clientX - offsetX) + 'px';
+                draggedWindow.style.top = (e.clientY - offsetY) + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (draggedWindow) {
+                draggedWindow.style.zIndex = 1000;
+                draggedWindow = null;
+            }
+        });
+
+        // Initialize
+        console.log('🌋 Lava OS v2.0 Booted Successfully');
+        console.log('Status: ONLINE');
+    </script>
+
+</body>
+</html>

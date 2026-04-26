@@ -1,0 +1,545 @@
+D:\Andris\Music\html\stealth.html
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f172a">
+    <title>The Stealth Switch</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-color: #f1f5f9;
+            --accent-color: #38bdf8;
+            --switch-bg: #334155;
+        }
+
+            :root[data-theme="light"] {
+                --bg-color: #f8fafc;
+                --text-color: #1e293b;
+                --accent-color: #0284c7;
+                --switch-bg: #cbd5e1;
+            }
+
+            :root[data-theme="sepia"] {
+                --bg-color: #f4eae0;
+                --text-color: #5c4033;
+                --accent-color: #d2691e;
+                --switch-bg: #d7ccc8;
+            }
+
+            :root[data-theme="high-contrast"] {
+                --bg-color: #000000;
+                --text-color: #ffffff;
+                --accent-color: #ffff00;
+                --switch-bg: #333333;
+            }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.5s ease;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        h1 {
+            margin: 0 0 30px 0;
+            letter-spacing: 2px;
+            font-size: 2.5rem;
+        }
+
+        /* MAIN CONTROLS */
+        .controls-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* THEME SELECTOR */
+        .theme-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .theme-btn {
+            padding: 10px 15px;
+            border: 2px solid var(--accent-color);
+            background: var(--switch-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+            .theme-btn.active {
+                background: var(--accent-color);
+                color: var(--bg-color);
+                transform: scale(1.1);
+            }
+
+            .theme-btn:hover {
+                transform: translateY(-2px);
+            }
+
+        /* TOGGLE SWITCH */
+        .switch-container {
+            position: relative;
+            display: inline-block;
+            width: 80px;
+            height: 40px;
+        }
+
+            .switch-container input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--switch-bg);
+            transition: 0.4s;
+            border-radius: 34px;
+            border: 2px solid var(--accent-color);
+        }
+
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 26px;
+                width: 26px;
+                left: 5px;
+                bottom: 5px;
+                background-color: var(--accent-color);
+                transition: 0.4s;
+                border-radius: 50%;
+                box-shadow: 0 0 10px var(--accent-color);
+            }
+
+        input:checked + .slider {
+            background-color: #e2e8f0;
+        }
+
+            input:checked + .slider:before {
+                transform: translateX(40px);
+                background-color: #f59e0b;
+                box-shadow: 0 0 15px #f59e0b;
+            }
+
+        .switch-container input:focus-visible + .slider {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        /* STATUS & INFO */
+        .status-section {
+            margin: 20px 0;
+        }
+
+        .status-text {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        .info-text {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* SETTINGS PANEL */
+        .settings-panel {
+            background: var(--switch-bg);
+            border: 2px solid var(--accent-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            max-width: 400px;
+        }
+
+            .settings-panel h3 {
+                margin-top: 0;
+                color: var(--accent-color);
+            }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: var(--bg-color);
+            border-radius: 6px;
+        }
+
+            .setting-item label {
+                cursor: pointer;
+                font-weight: 500;
+            }
+
+            .setting-item input[type="checkbox"] {
+                width: 20px;
+                height: 20px;
+                cursor: pointer;
+            }
+
+            .setting-item input[type="range"] {
+                width: 60px;
+                cursor: pointer;
+            }
+
+        /* STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: var(--switch-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--accent-color);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        /* SHORTCUTS */
+        .shortcuts {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--accent-color);
+            opacity: 0.7;
+            font-size: 0.85rem;
+        }
+
+        .shortcut-item {
+            margin: 5px 0;
+        }
+
+        .key {
+            background: var(--accent-color);
+            color: var(--bg-color);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 id="title">STEALTH MODE</h1>
+
+        <div class="controls-section">
+            <!-- THEME SELECTOR -->
+            <div class="theme-buttons">
+                <button class="theme-btn active" data-theme="dark">Dark</button>
+                <button class="theme-btn" data-theme="light">Light</button>
+                <button class="theme-btn" data-theme="sepia">Sepia</button>
+                <button class="theme-btn" data-theme="high-contrast">High Contrast</button>
+            </div>
+
+            <!-- LEGACY TOGGLE SWITCH -->
+            <label class="switch-container">
+                <input type="checkbox" id="legacySwitch" aria-label="Legacy mode switch">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- STATUS -->
+        <div class="status-section">
+            <div class="status-text" id="status">System: Hidden</div>
+            <div class="info-text">Current Theme: <strong id="currentTheme">Dark</strong></div>
+            <div class="info-text" id="timeInfo"></div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="settings-panel">
+            <h3>⚙️ Settings</h3>
+
+            <div class="setting-item">
+                <label>🔊 Sound Effects</label>
+                <input type="checkbox" id="soundToggle" checked>
+            </div>
+
+            <div class="setting-item">
+                <label>🌙 Auto Dark at Night</label>
+                <input type="checkbox" id="autoNightMode">
+            </div>
+
+            <div class="setting-item">
+                <label>📝 Font Size</label>
+                <input type="range" id="fontSizeSlider" min="90" max="130" value="100">
+                <span id="fontSizeDisplay">100%</span>
+            </div>
+
+            <div class="setting-item">
+                <label>✨ Animations</label>
+                <input type="checkbox" id="animationToggle" checked>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-value" id="toggleCount">0</div>
+                <div class="stat-label">Toggles</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="sessionTime">0s</div>
+                <div class="stat-label">Session</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="currentHour">--:--</div>
+                <div class="stat-label">Time</div>
+            </div>
+        </div>
+
+        <!-- SHORTCUTS INFO -->
+        <div class="shortcuts">
+            <strong>⌨️ Keyboard Shortcuts:</strong><br>
+            <div class="shortcut-item"><span class="key">D</span> Dark | <span class="key">L</span> Light | <span class="key">S</span> Sepia | <span class="key">H</span> High Contrast</div>
+            <div class="shortcut-item"><span class="key">T</span> Toggle Legacy | <span class="key">R</span> Reset Settings</div>
+        </div>
+    </div>
+
+    <script>
+        // STATE MANAGEMENT
+        const state = {
+            currentTheme: 'dark',
+            toggleCount: 0,
+            sessionStart: Date.now(),
+            soundEnabled: localStorage.getItem('soundEnabled') !== 'false',
+            autoNightMode: localStorage.getItem('autoNightMode') === 'true',
+            fontSize: parseInt(localStorage.getItem('fontSize') || '100'),
+            animationsEnabled: localStorage.getItem('animationsEnabled') !== 'false'
+        };
+
+        // AUDIO CONTEXT FOR SOUND
+        let audioContext;
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(freq = 400, duration = 50) {
+            if (!state.soundEnabled) return;
+            initAudio();
+
+            const now = audioContext.currentTime;
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.value = freq;
+            osc.type = 'sine';
+
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + duration / 1000);
+
+            osc.start(now);
+            osc.stop(now + duration / 1000);
+        }
+
+        // THEME APPLICATION
+        function applyTheme(theme) {
+            const html = document.documentElement;
+            html.setAttribute('data-theme', theme === 'dark' ? '' : theme);
+            state.currentTheme = theme;
+
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === theme);
+            });
+
+            document.getElementById('currentTheme').textContent =
+                theme.charAt(0).toUpperCase() + theme.slice(1);
+
+            localStorage.setItem('theme', theme);
+            playSound(theme === 'dark' ? 300 : 600);
+        }
+
+        // KEYBOARD SHORTCUTS
+        document.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+
+            switch (key) {
+                case 'd':
+                    applyTheme('dark');
+                    break;
+                case 'l':
+                    applyTheme('light');
+                    break;
+                case 's':
+                    applyTheme('sepia');
+                    break;
+                case 'h':
+                    applyTheme('high-contrast');
+                    break;
+                case 't':
+                    document.getElementById('legacySwitch').click();
+                    break;
+                case 'r':
+                    resetSettings();
+                    break;
+            }
+        });
+
+        // THEME BUTTONS
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                applyTheme(btn.dataset.theme);
+                state.toggleCount++;
+                updateStats();
+            });
+        });
+
+        // LEGACY SWITCH
+        document.getElementById('legacySwitch').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                applyTheme('light');
+            } else {
+                applyTheme('dark');
+            }
+            state.toggleCount++;
+            updateStats();
+        });
+
+        // SETTINGS
+        document.getElementById('soundToggle').addEventListener('change', (e) => {
+            state.soundEnabled = e.target.checked;
+            localStorage.setItem('soundEnabled', state.soundEnabled);
+            playSound(800, 100);
+        });
+
+        document.getElementById('autoNightMode').addEventListener('change', (e) => {
+            state.autoNightMode = e.target.checked;
+            localStorage.setItem('autoNightMode', state.autoNightMode);
+            checkAutoNightMode();
+        });
+
+        document.getElementById('fontSizeSlider').addEventListener('input', (e) => {
+            state.fontSize = parseInt(e.target.value);
+            document.body.style.fontSize = state.fontSize + '%';
+            document.getElementById('fontSizeDisplay').textContent = state.fontSize + '%';
+            localStorage.setItem('fontSize', state.fontSize);
+        });
+
+        document.getElementById('animationToggle').addEventListener('change', (e) => {
+            state.animationsEnabled = e.target.checked;
+            document.body.style.animation = state.animationsEnabled ? '' : '0.01ms';
+            localStorage.setItem('animationsEnabled', state.animationsEnabled);
+        });
+
+        // AUTO NIGHT MODE
+        function checkAutoNightMode() {
+            if (!state.autoNightMode) return;
+            const hour = new Date().getHours();
+            applyTheme(hour >= 21 || hour < 7 ? 'dark' : 'light');
+        }
+
+        // UPDATE STATS
+        function updateStats() {
+            document.getElementById('toggleCount').textContent = state.toggleCount;
+
+            const elapsed = Math.floor((Date.now() - state.sessionStart) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('sessionTime').textContent =
+                minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
+
+            const now = new Date();
+            document.getElementById('currentHour').textContent =
+                now.toLocaleTimeString('lv-LV', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('timeInfo').textContent =
+                now.toLocaleDateString('lv-LV', { weekday: 'long', month: 'long', day: 'numeric' });
+        }
+
+        // RESET SETTINGS
+        function resetSettings() {
+            if (confirm('Reset all settings to defaults?')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // INIT
+        function initialize() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const savedToggleCount = localStorage.getItem('toggleCount') || '0';
+
+            state.toggleCount = parseInt(savedToggleCount);
+            state.soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+            state.autoNightMode = localStorage.getItem('autoNightMode') === 'true';
+            state.fontSize = parseInt(localStorage.getItem('fontSize') || '100');
+            state.animationsEnabled = localStorage.getItem('animationsEnabled') !== 'false';
+
+            document.getElementById('soundToggle').checked = state.soundEnabled;
+            document.getElementById('autoNightMode').checked = state.autoNightMode;
+            document.getElementById('fontSizeSlider').value = state.fontSize;
+            document.getElementById('animationToggle').checked = state.animationsEnabled;
+
+            document.body.style.fontSize = state.fontSize + '%';
+
+            applyTheme(savedTheme);
+            checkAutoNightMode();
+            updateStats();
+
+            setInterval(updateStats, 1000);
+            setInterval(() => {
+                localStorage.setItem('toggleCount', state.toggleCount);
+            }, 5000);
+        }
+
+        initialize();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PORTAL 99 | SYSTEM ADMINISTRATION</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0a;
+            --panel: #1a1a1a;
+            --border: #333;
+            --text: #a0a0a0;
+            --accent: #ff4d00;
+            --accent-light: #ff6b35;
+            --mono: 'Courier New', monospace;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--mono);
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 2px;
+            background-color: #000;
+        }
+
+        /* PANELS */
+        .panel {
+            background: var(--panel);
+            border: 2px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .panel::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 77, 0, 0.3);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #fff;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 15px 0 10px 0;
+            border-bottom: 1px solid var(--accent);
+            padding-bottom: 8px;
+        }
+
+        /* FORM STEPS */
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px 0;
+            font-size: 0.85rem;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input, select {
+            background: #000;
+            border: 2px solid var(--border);
+            color: var(--accent);
+            padding: 12px;
+            width: 100%;
+            margin: 5px 0 10px 0;
+            outline: none;
+            font-family: var(--mono);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(255, 77, 0, 0.2);
+        }
+
+        /* BUTTONS */
+        button {
+            background: var(--border);
+            color: #fff;
+            border: 2px solid var(--accent);
+            padding: 12px 20px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 10px;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 77, 0, 0.4);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* PROGRESS BAR */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .bar-bg {
+            background: #000;
+            height: 8px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #form-progress {
+            background: linear-gradient(to right, var(--accent), var(--accent-light));
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(255, 77, 0, 0.5);
+        }
+
+        /* STATS */
+        .stat-box {
+            background: #000;
+            border: 1px solid var(--border);
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        /* TAX CALCULATOR */
+        .fee-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin: 8px 0;
+            padding: 8px;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 4px;D:\Andris\Music\html\portal 99.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PORTAL 99 | SYSTEM ADMINISTRATION</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0a;
+            --panel: #1a1a1a;
+            --border: #333;
+            --text: #a0a0a0;
+            --accent: #ff4d00;
+            --accent-light: #ff6b35;
+            --mono: 'Courier New', monospace;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--mono);
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 2px;
+            background-color: #000;
+        }
+
+        /* PANELS */
+        .panel {
+            background: var(--panel);
+            border: 2px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .panel::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 77, 0, 0.3);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #fff;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 15px 0 10px 0;
+            border-bottom: 1px solid var(--accent);
+            padding-bottom: 8px;
+        }
+
+        /* FORM STEPS */
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px 0;
+            font-size: 0.85rem;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input, select {
+            background: #000;
+            border: 2px solid var(--border);
+            color: var(--accent);
+            padding: 12px;
+            width: 100%;
+            margin: 5px 0 10px 0;
+            outline: none;
+            font-family: var(--mono);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(255, 77, 0, 0.2);
+        }
+
+        /* BUTTONS */
+        button {
+            background: var(--border);
+            color: #fff;
+            border: 2px solid var(--accent);
+            padding: 12px 20px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 10px;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 77, 0, 0.4);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* PROGRESS BAR */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .bar-bg {
+            background: #000;
+            height: 8px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #form-progress {
+            background: linear-gradient(to right, var(--accent), var(--accent-light));
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(255, 77, 0, 0.5);
+        }
+
+        /* STATS */
+        .stat-box {
+            background: #000;
+            border: 1px solid var(--border);
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        /* TAX CALCULATOR */
+        .fee-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin: 8px 0;
+            padding: 8px;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        .fee-label {
+            color: var(--text);
+        }
+
+        .fee-value {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .total-box {
+            border-top: 2px solid var(--accent);
+            margin-top: 15px;
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: #fff;
+        }
+
+        .total-value {
+            color: var(--accent);
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(255, 77, 0, 0.3);
+        }
+
+        /* CAPTCHA */
+        .captcha-container {
+            background: #000;
+            border: 2px dashed var(--accent);
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        #captcha-text {
+            display: inline-block;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            animation: captchaGlitch 0.5s infinite;
+        }
+
+        @keyframes captchaGlitch {
+            0%, 100% { transform: translateX(0) skewX(0deg); filter: hue-rotate(0deg); }
+            25% { transform: translateX(2px) skewX(2deg); filter: hue-rotate(90deg); }
+            50% { transform: translateX(-2px) skewX(-2deg); filter: hue-rotate(180deg); }
+            75% { transform: translateX(2px) skewX(2deg); filter: hue-rotate(270deg); }
+        }
+
+        /* CHECKBOX */
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .checkbox-label D:\Andris\Music\html\portal 99.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PORTAL 99 | SYSTEM ADMINISTRATION</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0a;
+            --panel: #1a1a1a;
+            --border: #333;
+            --text: #a0a0a0;
+            --accent: #ff4d00;
+            --accent-light: #ff6b35;
+            --mono: 'Courier New', monospace;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--mono);
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 2px;
+            background-color: #000;
+        }
+
+        /* PANELS */
+        .panel {
+            background: var(--panel);
+            border: 2px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .panel::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 77, 0, 0.3);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #fff;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 15px 0 10px 0;
+            border-bottom: 1px solid var(--accent);
+            padding-bottom: 8px;
+        }
+
+        /* FORM STEPS */
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px 0;
+            font-size: 0.85rem;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input, select {
+            background: #000;
+            border: 2px solid var(--border);
+            color: var(--accent);
+            padding: 12px;
+            width: 100%;
+            margin: 5px 0 10px 0;
+            outline: none;
+            font-family: var(--mono);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(255, 77, 0, 0.2);
+        }
+
+        /* BUTTONS */
+        button {
+            background: var(--border);
+            color: #fff;
+            border: 2px solid var(--accent);
+            padding: 12px 20px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 10px;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 77, 0, 0.4);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* PROGRESS BAR */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .bar-bg {
+            background: #000;
+            height: 8px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #form-progress {
+            background: linear-gradient(to right, var(--accent), var(--accent-light));
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(255, 77, 0, 0.5);
+        }
+
+        /* STATS */
+        .stat-box {
+            background: #000;
+            border: 1px solid var(--border);
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        /* TAX CALCULATOR */
+        .fee-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin: 8px 0;
+            padding: 8px;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        .fee-label {
+            color: var(--text);
+        }
+
+        .fee-value {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .total-box {
+            border-top: 2px solid var(--accent);
+            margin-top: 15px;
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: #fff;
+        }
+
+        .total-value {
+            color: var(--accent);
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(255, 77, 0, 0.3);
+        }
+
+        /* CAPTCHA */
+        .captcha-container {
+            background: #000;
+            border: 2px dashed var(--accent);
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        #captcha-text {
+            display: inline-block;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            animation: captchaGlitch 0.5s infinite;
+        }
+
+        @keyframes captchaGlitch {
+            0%, 100% { transform: translateX(0) skewX(0deg); filter: hue-rotate(0deg); }
+            25% { transform: translateX(2px) skewX(2deg); filter: hue-rotate(90deg); }
+            50% { transform: translateX(-2px) skewX(-2deg); filter: hue-rotate(180deg); }
+            75% { transform: translateX(2px) skewX(2deg); filter: hue-rotate(270deg); }
+        }
+
+        /* CHECKBOX */
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        /* SAVE DRAFT BUTTON */
+        #save-draft {
+            position: fixed;
+            display: none;
+            z-index: 1000;
+            background: #00ffff;
+            color: #000;
+            border: 2px solid #00ffff;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            animation: pulse D:\Andris\Music\html\portal 99.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PORTAL 99 | SYSTEM ADMINISTRATION</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0a;
+            --panel: #1a1a1a;
+            --border: #333;
+            --text: #a0a0a0;
+            --accent: #ff4d00;
+            --accent-light: #ff6b35;
+            --mono: 'Courier New', monospace;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--mono);
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 2px;
+            background-color: #000;
+        }
+
+        /* PANELS */
+        .panel {
+            background: var(--panel);
+            border: 2px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .panel::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 77, 0, 0.3);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #fff;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 15px 0 10px 0;
+            border-bottom: 1px solid var(--accent);
+            padding-bottom: 8px;
+        }
+
+        /* FORM STEPS */
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px 0;
+            font-size: 0.85rem;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input, select {
+            background: #000;
+            border: 2px solid var(--border);
+            color: var(--accent);
+            padding: 12px;
+            width: 100%;
+            margin: 5px 0 10px 0;
+            outline: none;
+            font-family: var(--mono);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(255, 77, 0, 0.2);
+        }
+
+        /* BUTTONS */
+        button {
+            background: var(--border);
+            color: #fff;
+            border: 2px solid var(--accent);
+            padding: 12px 20px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 10px;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 77, 0, 0.4);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* PROGRESS BAR */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .bar-bg {
+            background: #000;
+            height: 8px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #form-progress {
+            background: linear-gradient(to right, var(--accent), var(--accent-light));
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(255, 77, 0, 0.5);
+        }
+
+        /* STATS */
+        .stat-box {
+            background: #000;
+            border: 1px solid var(--border);
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        /* TAX CALCULATOR */
+        .fee-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin: 8px 0;
+            padding: 8px;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        .fee-label {
+            color: var(--text);
+        }
+
+        .fee-value {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .total-box {
+            border-top: 2px solid var(--accent);
+            margin-top: 15px;
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: #fff;
+        }
+
+        .total-value {
+            color: var(--accent);
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(255, 77, 0, 0.3);
+        }
+
+        /* CAPTCHA */
+        .captcha-container {
+            background: #000;
+            border: 2px dashed var(--accent);
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        #captcha-text {
+            display: inline-block;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            animation: captchaGlitch 0.5s infinite;
+        }
+
+        @keyframes captchaGlitch {
+            0%, 100% { transform: translateX(0) skewX(0deg); filter: hue-rotate(0deg); }
+            25% { transform: translateX(2px) skewX(2deg); filter: hue-rotate(90deg); }
+            50% { transform: translateX(-2px) skewX(-2deg); filter: hue-rotate(180deg); }
+            75% { transform: translateX(2px) skewX(2deg); filter: hue-rotate(270deg); }
+        }
+
+        /* CHECKBOX */
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        /* SAVE DRAFT BUTTON */
+        #save-draft {
+            position: fixed;
+            display: none;
+            z-index: 1000;
+            background: #00ffff;
+            color: #000;
+            border: 2px solid #00ffff;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(0, 255, 255, 0.5); }
+            50% { box-shadow: 0 0 60px rgba(0, 255, 255, 0.8); }
+        }
+
+        /* SUCCESS MESSAGE */
+        .success-msg {
+            background: rgba(46, 204, 113, 0.1);
+            border: 2px solid #2ecc71;
+            color: #2ecc71;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.85rem;<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PORTAL 99 | SYSTEM ADMINISTRATION</title>
+    <style>
+        :root {
+            --bg: #1a1a1a;
+            --panel: #2a2a2a;
+            --text: #a0a0a0;
+            --accent: #ff4d00;
+            --border: #444;
+            --mono: 'Courier New', monospace;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--mono);
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            height: 100vh; margin: 0; gap: 2px;
+            background-color: #000;
+        }
+
+        /* INDUSTRIAL BRUTALISM PANELS */
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        h2 { color: #fff; font-size: 0.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 5px; }
+
+        /* MULTI-STEP FORM */
+        .step { display: none; }
+        .step.active { display: block; }
+        
+        input, select {
+            background: #000;
+            border: 1px solid var(--border);
+            color: var(--accent);
+            padding: 10px;
+            width: 100%;
+            margin: 10px 0;
+            outline: none;
+        }
+
+        .error-msg { color: var(--accent); font-size: 0.7rem; display: none; }
+
+        /* LIVE TAX CALCULATOR */
+        .fee-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin: 5px 0; }
+        .total-box { border-top: 2px solid var(--accent); margin-top: 20px; padding-top: 10px; color: #fff; }
+
+        /* PROGRESS BARS (DASHBOARD) */
+        .bar-container { background: #000; height: 10px; margin: 10px 0; }
+        #form-progress { background: var(--accent); height: 100%; width: 0%; transition: 0.5s; }
+
+        /* CAPTCHA ANIMATION */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        #captcha-text { 
+            display: inline-block; 
+            animation: bounce 0.5s infinite; 
+            color: #fff; 
+            font-weight: bold; 
+            letter-spacing: 5px;
+        }
+
+        /* BUTTONS */
+        button {
+            background: var(--border);
+            color: #fff;
+            border: none;
+            padding: 15px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        button:hover { background: var(--accent); color: #000; }
+
+        #save-draft { position: fixed; width: auto; display: none; z-index: 1000; background: cyan; color: #000; }
+    </style>
+</head>
+<body onmousemove="trackActivity()" onkeydown="trackActivity()">
+
+    <div class="panel">
+        <h2>SYSTEM_DASHBOARD</h2>
+        <p>Completion Rank:</p>
+        <div class="bar-container"><div id="form-progress"></div></div>
+        
+        <div id="stats" style="font-size: 0.7rem; margin-top: 40px;">
+            <p>User Entropy: <span id="entropy">0</span></p>
+            <p>Session Time: <span id="timer">60</span>s</p>
+        </div>
+
+        <button id="save-draft" onclick="saveDraft()">SAVE DRAFT</button>
+    </div>
+
+    <div class="panel">
+        <h1 style="color:#fff">PORTAL_99_GATEWAY</h1>
+        <hr border="1">
+
+        <div id="form-container">
+            <div class="step active" id="step1">
+                <h2>STEP_01: IDENTITY_VERIFICATION</h2>
+                <label>Citizen Serial Number:</label>
+                <input type="text" id="serial" placeholder="Format: XXXX-0000">
+                <button onclick="nextStep(1)">Validate Serial</button>
+            </div>
+
+            <div class="step" id="step2">
+                <h2>STEP_02: GEOGRAPHICAL_ORIGIN</h2>
+                <select id="region">
+                    <option value="">Select District...</option>
+                    <option value="Sector_A">Sector A (Industrial)</option>
+                    <option value="Sector_B">Sector B (Slums)</option>
+                </select>
+                <button onclick="nextStep(2)">Confirm Sector</button>
+            </div>
+
+            <div class="step" id="step3">
+                <h2>STEP_03: SECURITY_MATH</h2>
+                <p>Solve to prove humanity:</p>
+                <div id="captcha-container">
+                    <span id="captcha-text">4 + 9 * 2</span>
+                </div>
+                <input type="number" id="captcha-input" placeholder="Result">
+                <button onclick="nextStep(3)">Solve</button>
+            </div>
+
+            <div class="step" id="step4">
+                <h2>STEP_04: LIABILITY_ACKNOWLEDGEMENT</h2>
+                <p style="font-size: 0.6rem;">Do you agree to the 7.5% Bureaucracy Tax?</p>
+                <input type="checkbox" id="liability" style="width: auto;"> I ACCEPT ALL DEBTS.
+                <button onclick="nextStep(4)">Submit Declaration</button>
+            </div>
+
+            <div class="step" id="step5">
+                <h2>STEP_05: FINAL_GENERATION</h2>
+                <p>Data Archive Ready.</p>
+                <button onclick="exportData()">EXPORT_TO_TXT</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>TAX_AUDIT_LOG</h2>
+        <div id="tax-log">
+            <div class="fee-row"><span>Process Fee:</span> <span id="fee-base">$0.00</span></div>
+            <div class="fee-row"><span>VAT (21%):</span> <span id="fee-vat">$0.00</span></div>
+            <div class="fee-row"><span>Bureau-Tax (7.5%):</span> <span id="fee-bur">$0.00</span></div>
+        </div>
+        <div class="total-box">
+            <span>TOTAL DEBT:</span> <span id="fee-total">$0.00</span>
+        </div>
+    </div>
+
+    <script>
+        // STATE VARIABLES
+        let currentStep = 1;
+        let baseFee = 0;
+        let timeLeft = 60;
+        let entropyCount = 0;
+
+        // 1. ANNOYING TAX CALCULATOR
+        function trackActivity() {
+            entropyCount++;
+            baseFee += 0.01; // Every move costs money
+            document.getElementById('entropy').innerText = entropyCount;
+            updateTaxes();
+        }
+
+        function updateTaxes() {
+            const vat = baseFee * 0.21;
+            const bur = baseFee * 0.075;
+            const total = baseFee + vat + bur;
+
+            document.getElementById('fee-base').innerText = `$${baseFee.toFixed(2)}`;
+            document.getElementById('fee-vat').innerText = `$${vat.toFixed(2)}`;
+            document.getElementById('fee-bur').innerText = `$${bur.toFixed(2)}`;
+            document.getElementById('fee-total').innerText = `$${total.toFixed(2)}`;
+        }
+
+        // 2. MULTI-STEP LOGIC
+        function nextStep(step) {
+            let isValid = false;
+
+            if(step === 1) isValid = document.getElementById('serial').value.length > 5;
+            if(step === 2) isValid = document.getElementById('region').value !== "";
+            if(step === 3) isValid = document.getElementById('captcha-input').value == "22";
+            if(step === 4) {
+                isValid = document.getElementById('liability').checked;
+                if(!isValid) {
+                    alert("LIABILITY REJECTED. SYSTEM RESET.");
+                    resetSystem();
+                    return;
+                }
+            }
+
+            if(isValid) {
+                document.getElementById(`step${step}`).classList.remove('active');
+                currentStep++;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                updateProgress();
+            } else {
+                alert("ERROR: INVALID INPUT. RETURNING TO START.");
+                resetSystem();
+            }
+        }
+
+        function resetSystem() {
+            currentStep = 1;
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step1').classList.add('active');
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const perc = (currentStep - 1) * 25;
+            document.getElementById('form-progress').style.width = perc + "%";
+        }
+
+        // 3. ANNOYING LOGOUT TIMER
+        setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer').innerText = timeLeft;
+            if(timeLeft <= 0) {
+                alert("SESSION EXPIRED. ALL DATA LOST.");
+                location.reload();
+            }
+            // Move Save Draft randomly
+            if(timeLeft % 5 === 0) moveSaveBtn();
+        }, 1000);
+
+        function moveSaveBtn() {
+            const btn = document.getElementById('save-draft');
+            btn.style.display = 'block';
+            btn.style.top = Math.random() * 80 + "vh";
+            btn.style.left = Math.random() * 80 + "vw";
+        }
+
+        function saveDraft() {
+            timeLeft = 60;
+            document.getElementById('save-draft').style.display = 'none';
+            alert("DRAFT SAVED. SESSION EXTENDED.");
+        }
+
+        // 4. TXT EXPORT
+        function exportData() {
+            const content = `PORTAL 99 ARCHIVE\nDebt: ${document.getElementById('fee-total').innerText}\nEntropy: ${entropyCount}`;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const anchor = document.createElement('a');
+            anchor.download = "citizen_archive.txt";
+            anchor.href = window.URL.createObjectURL(blob);
+            anchor.click();
+        }
+    </script>
+</body>
+</html>
