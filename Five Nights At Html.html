@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FNAF HTML | Definitive Edition</title>
+    <style>
+        body {
+            margin: 0;
+            background: black;
+            color: white;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .screen {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+        }
+
+        .active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* PAUSE MENU */
+        #pause-menu {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* OFFICE - THE FIX: Using 150vw and absolute positioning */
+        #office-view {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            background: #050505;
+        }
+
+        #office-container {
+            background: linear-gradient(90deg, #111 0%, #222 50%, #111 100%);
+            width: 150vw;
+            height: 100vh;
+            transition: transform 0.1s ease-out;
+            position: absolute;
+            left: -25vw; /* Centers the 150vw container on a 100vw screen */
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .door {
+            width: 15vw;
+            height: 85%;
+            background: #333;
+            border: 10px solid #000;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 5;
+        }
+
+        .door-open {
+            transform: translateY(-100%);
+        }
+
+        /* HALL LIGHT EFFECT */
+        #hall-light {
+            position: absolute;
+            inset: 0;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 2;
+            transition: opacity 0.05s;
+        }
+
+        /* HUD & TABLET */
+        #hud {
+            position: absolute;
+            bottom: 120px;
+            left: 30px;
+            z-index: 10;
+            font-weight: bold;
+        }
+
+        #usage-bars {
+            color: #00ff00;
+            letter-spacing: 2px;
+        }
+
+        #clock {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 2.5rem;
+            z-index: 10;
+            text-shadow: 2px 2px #000;
+        }
+
+        #cam-tablet {
+            position: absolute;
+            inset: 0;
+            background: #000;
+            display: none;
+            z-index: 50;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 20px solid #222;
+        }
+
+        #cam-display {
+            width: 80%;
+            height: 70%;
+            border: 4px solid #444;
+            position: relative;
+            background: #020202;
+            overflow: hidden;
+        }
+
+        #cam-static {
+            position: absolute;
+            inset: 0;
+            background: url('https://media.giphy.com/media/oEI9uWUqnW9Fe/giphy.gif');
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        #monitor-toggle {
+            position: absolute;
+            bottom: 0;
+            width: 40%;
+            height: 45px;
+            background: rgba(255,255,255,0.1);
+            left: 30%;
+            border: 2px solid white;
+            z-index: 100;
+            cursor: pointer;
+            text-align: center;
+            line-height: 45px;
+            border-radius: 15px 15px 0 0;
+        }
+
+            #monitor-toggle:hover {
+                background: rgba(255,255,255,0.3);
+            }
+
+        .cam-btn {
+            padding: 10px;
+            margin: 5px;
+            background: #111;
+            color: white;
+            border: 1px solid #555;
+            cursor: pointer;
+        }
+
+            .cam-btn:hover {
+                background: #ff0000;
+                color: #000;
+            }
+    </style>
+</head>
+<body>
+
+    <div id="pause-menu">
+        <h1 style="color:red; font-size: 5rem;">PAUSED</h1>
+        <button class="cam-btn" onclick="togglePause()" style="font-size: 2rem;">RESUME</button>
+    </div>
+
+    <div id="menu" class="screen active">
+        <h1 style="font-size:4.5rem; color:red; text-align:center;">FIVE NIGHTS<br>AT HTML</h1>
+        <button class="cam-btn" style="font-size:1.5rem" onclick="launch(1)">START NIGHT 1</button>
+        <button class="cam-btn" style="font-size:1rem" onclick="launch(20)">4/20 MODE (EXTREME)</button>
+    </div>
+
+    <div id="game" class="screen">
+        <div id="clock">12 AM</div>
+        <div id="hud">
+            Power: <span id="power">100</span>%<br>
+            Usage: <span id="usage-bars">||</span>
+        </div>
+
+        <div id="office-view">
+            <div id="hall-light"></div>
+            <div id="office-container">
+                <div id="door-left" class="door door-open"></div>
+                <div style="width: 30vw; text-align: center;">
+                    <div id="golden-freddy" style="font-size: 8rem; display: none;">🐻</div>
+                    <p style="color: #222;">[ SPACE ] FOR LIGHT</p>
+                </div>
+                <div id="door-right" class="door door-open"></div>
+            </div>
+        </div>
+
+        <div id="cam-tablet">
+            <div id="cam-display">
+                <div id="cam-static"></div>
+                <div id="cam-label" style="position:absolute; top:20px; left:20px; font-size:1.5rem; background:rgba(0,0,0,0.6);">CAM 1A</div>
+                <div id="anim-render" style="font-size:8rem; text-align:center; margin-top:5%;"></div>
+            </div>
+            <div style="margin-top:20px;">
+                <button class="cam-btn" onclick="changeCam('1A')">1A</button>
+                <button class="cam-btn" onclick="changeCam('1B')">1B</button>
+                <button class="cam-btn" onclick="changeCam('1C')">1C</button>
+                <button class="cam-btn" onclick="changeCam('2A')">2A</button>
+                <button class="cam-btn" onclick="changeCam('4A')">4B</button>
+            </div>
+        </div>
+
+        <div id="monitor-toggle" onmouseover="toggleCams()">MONITOR</div>
+
+        <div style="position:absolute; bottom:0; width:100%; height:80px; display:flex; z-index: 10;">
+            <button class="cam-btn" style="flex:1" onclick="toggleDoor('left')">DOOR L</button>
+            <button class="cam-btn" style="flex:1" onclick="toggleDoor('right')">DOOR R</button>
+        </div>
+    </div>
+
+    <script>
+        let power = 100, usage = 1, time = 0, isPaused = false, gameActive = false;
+        let lDoor = false, rDoor = false, camOpen = false, curCam = '1A';
+        let aiLevel = 1;
+        let bonniePos = 0, chicaPos = 0, foxyPos = 0, freddyPos = 0, foxyAggro = 0;
+
+        function launch(diff) {
+            aiLevel = diff;
+            document.getElementById('menu').classList.remove('active');
+            document.getElementById('game').classList.add('active');
+            gameActive = true;
+            initGame();
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            document.getElementById('pause-menu').style.display = isPaused ? 'flex' : 'none';
+        }
+
+        window.addEventListener('keydown', e => {
+            if (e.key === "Escape") togglePause();
+            if (e.code === "Space") document.getElementById('hall-light').style.opacity = "0.2";
+        });
+        window.addEventListener('keyup', e => {
+            if (e.code === "Space") document.getElementById('hall-light').style.opacity = "0";
+        });
+
+        function toggleDoor(s) {
+            if (s === 'left') lDoor = !lDoor; else rDoor = !rDoor;
+            document.getElementById('door-' + s).classList.toggle('door-open', !(s === 'left' ? lDoor : rDoor));
+            updateStats();
+        }
+
+        function toggleCams() {
+            if (isPaused || !gameActive) return;
+            camOpen = !camOpen;
+            document.getElementById('cam-tablet').style.display = camOpen ? 'flex' : 'none';
+            document.getElementById('golden-freddy').style.display = 'none';
+            updateStats();
+        }
+
+        function changeCam(c) {
+            curCam = c;
+            document.getElementById('cam-label').innerText = "CAM " + c;
+            renderCams();
+        }
+
+        function updateStats() {
+            usage = 1 + (lDoor ? 1 : 0) + (rDoor ? 1 : 0) + (camOpen ? 1 : 0);
+            document.getElementById('usage-bars').innerText = "|".repeat(usage);
+        }
+
+        function renderCams() {
+            let r = document.getElementById('anim-render'); r.innerText = "";
+            if (curCam === '1A') { if (bonniePos === 0) r.innerText += "🐰"; if (chicaPos === 0) r.innerText += "🐥"; if (freddyPos === 0) r.innerText += "🐻"; }
+            if (curCam === '1B' && bonniePos === 1) r.innerText = "🐰";
+            if (curCam === '1C') { r.innerText = foxyPos < 3 ? "📦" : "🏃"; foxyAggro = 0; }
+            if (curCam === '4A' && freddyPos === 3) r.innerText = "🐻";
+        }
+
+        function initGame() {
+            // Stats & Clock
+            setInterval(() => {
+                if (!gameActive || isPaused) return;
+                power -= (usage * 0.15);
+                document.getElementById('power').innerText = Math.max(0, Math.floor(power));
+                if (power <= 0) jumpscare("POWER OUTAGE");
+            }, 1000);
+
+            setInterval(() => {
+                if (!gameActive || isPaused) return;
+                time++;
+                document.getElementById('clock').innerText = (time == 6 ? 6 : time) + " AM";
+                if (time == 6) { alert("6 AM: YOU SURVIVED!"); location.reload(); }
+            }, 50000);
+
+            // AI Cycle
+            setInterval(() => {
+                if (!gameActive || isPaused) return;
+                if (curCam !== '1C') foxyAggro++;
+
+                // Foxy
+                if (foxyAggro > (22 - aiLevel) && Math.random() > 0.5) {
+                    foxyPos++;
+                    if (foxyPos >= 4) { if (!lDoor) jumpscare("FOXY"); else { foxyPos = 0; foxyAggro = 0; power -= 5; } }
+                }
+                // Freddy
+                if (Math.random() * 20 < aiLevel) {
+                    freddyPos++;
+                    if (freddyPos >= 4) { if (!rDoor) jumpscare("FREDDY"); else freddyPos = 3; }
+                }
+                // Golden Freddy
+                if (Math.random() > 0.99 && !camOpen) {
+                    document.getElementById('golden-freddy').style.display = 'block';
+                    setTimeout(() => { if (document.getElementById('golden-freddy').style.display === 'block') jumpscare("GOLDEN FREDDY"); }, 2000);
+                }
+                if (camOpen) renderCams();
+            }, 3500);
+        }
+
+        function jumpscare(w) {
+            gameActive = false;
+            document.body.innerHTML = `<div style="background:#200;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;color:red;">
+                    <h1 style="font-size:10rem;">IT'S ME</h1><h2>LOST TO ${w}</h2></div>`;
+            setTimeout(() => location.reload(), 3000);
+        }
+
+        /* DEFINITIVE PANNING LOGIC */
+        window.addEventListener('mousemove', e => {
+            if (!camOpen && gameActive && !isPaused) {
+                // Get mouse position as a percentage of the screen (0 to 1)
+                let mousePercent = e.clientX / window.innerWidth;
+
+                // The office is 150vw wide. To center it at mousePercent 0.5,
+                // we calculate a shift between -25vw and 25vw.
+                let shift = (mousePercent - 0.5) * 50;
+
+                document.getElementById('office-container').style.transform = `translateX(${-shift}vw)`;
+            }
+        });
+    </script>
+</body>
+</html>
