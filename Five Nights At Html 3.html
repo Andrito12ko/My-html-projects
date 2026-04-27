@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FNAF 3 | Definitive HTML</title>
+    <style>
+        :root {
+            --green: #33ff33;
+            --red: #ff3333;
+            --bg: #0a0a0a;
+        }
+
+        body {
+            margin: 0;
+            background: #000;
+            color: var(--green);
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* STATE SCREENS */
+        .screen {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            background: #000;
+        }
+
+        .active {
+            display: flex;
+        }
+
+        /* MAIN MENU */
+        #main-menu {
+            background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
+        }
+
+        .title {
+            font-size: 4rem;
+            text-align: center;
+            text-shadow: 0 0 20px var(--green);
+            margin-bottom: 40px;
+            animation: flicker 3s infinite;
+        }
+
+        .menu-btn {
+            background: none;
+            border: 1px solid var(--green);
+            color: var(--green);
+            padding: 15px 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin: 10px;
+            transition: 0.3s;
+            width: 300px;
+        }
+
+            .menu-btn:hover {
+                background: var(--green);
+                color: #000;
+                box-shadow: 0 0 20px var(--green);
+            }
+
+        /* PAUSE MENU */
+        #pause-menu {
+            background: rgba(0,0,0,0.9);
+            border: 2px solid var(--green);
+            width: 400px;
+            height: 300px;
+            margin: auto;
+            border-radius: 15px;
+        }
+
+        /* OFFICE & VIEWPORT */
+        #game-view {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        #office-container {
+            width: 180vw;
+            height: 100vh;
+            position: absolute;
+            left: -40vw;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
+        }
+
+        /* CRT & GLITCH EFFECTS */
+        #static-overlay {
+            position: fixed;
+            inset: 0;
+            background: url('https://media.giphy.com/media/oEI9uWUqnW9Fe/giphy.gif');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 2000;
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                opacity: 1;
+            }
+
+            20%, 24%, 55% {
+                opacity: 0.3;
+            }
+        }
+
+        /* PANELS */
+        .panel {
+            position: absolute;
+            bottom: 50px;
+            width: 450px;
+            height: 380px;
+            background: var(--bg);
+            border: 3px solid #333;
+            z-index: 500;
+            transition: 0.4s;
+            visibility: hidden;
+        }
+
+        #reboot-panel {
+            left: -500px;
+        }
+
+        #cam-panel {
+            right: -500px;
+        }
+
+        .panel.open {
+            visibility: visible;
+        }
+
+        #reboot-panel.open {
+            transform: translateX(520px);
+        }
+
+        #cam-panel.open {
+            transform: translateX(-520px);
+        }
+
+        /* UI ELEMENTS */
+        .sys-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #222;
+        }
+
+        .map-node {
+            position: absolute;
+            width: 30px;
+            height: 20px;
+            border: 1px solid var(--green);
+            font-size: 10px;
+            cursor: pointer;
+            background: #000;
+        }
+
+            .map-node.spring {
+                background: var(--red) !important;
+                box-shadow: 0 0 10px var(--red);
+            }
+
+        #hud {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            z-index: 600;
+        }
+
+        #alert {
+            position: fixed;
+            top: 15%;
+            width: 100%;
+            text-align: center;
+            color: var(--red);
+            font-size: 2rem;
+            display: none;
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="static-overlay"></div>
+
+    <div id="main-menu" class="screen active">
+        <div class="title">FAZBEAR'S FRIGHT<br><span style="font-size: 1.5rem;">THE HORROR ATTRACTION</span></div>
+        <button class="menu-btn" onclick="changeState('GAME')">NEW NIGHT</button>
+        <button class="menu-btn">LOAD GAME</button>
+        <button class="menu-btn">EXTRAS</button>
+    </div>
+
+    <div id="pause-menu" class="screen">
+        <h1 style="margin-bottom: 30px;">PAUSED</h1>
+        <button class="menu-btn" onclick="changeState('GAME')">RESUME</button>
+        <button class="menu-btn" onclick="location.reload()">QUIT TO MENU</button>
+    </div>
+
+    <div id="game-view">
+        <div id="alert">VENTILATION ERROR</div>
+        <div id="hud">12:00 AM</div>
+
+        <div id="office-container">
+            <div style="width: 400px; height: 500px; background: #050505; border: 5px solid #222; position: relative;">
+                <div id="window-spring" style="font-size: 8rem; display: none; text-align: center; margin-top: 50px;">🐰</div>
+                <p style="text-align: center; color: #111;">WINDOW</p>
+            </div>
+        </div>
+
+        <div id="reboot-panel" class="panel">
+            <h3 style="text-align: center; color: var(--green);">MAINTENANCE PANEL</h3>
+            <div class="sys-row">Audio Devices: <span id="s-audio">OK</span> <button onclick="reboot('audio')">FIX</button></div>
+            <div class="sys-row">Camera System: <span id="s-cams">OK</span> <button onclick="reboot('cams')">FIX</button></div>
+            <div class="sys-row">Ventilation: <span id="s-vents">OK</span> <button onclick="reboot('vents')">FIX</button></div>
+            <button onclick="reboot('all')" style="width: 100%; margin-top: 20px; padding: 10px; background: none; border: 1px solid var(--green); color: var(--green);">REBOOT ALL</button>
+        </div>
+
+        <div id="cam-panel" class="panel">
+            <div id="cam-feed" style="height: 200px; background: #000; position: relative; border-bottom: 2px solid var(--green);">
+                <div id="cam-noise" style="position: absolute; inset: 0; background: url('https://media.giphy.com/media/oEI9uWUqnW9Fe/giphy.gif'); opacity: 0.2;"></div>
+                <div style="padding: 10px;">CAM <span id="cam-id">01</span></div>
+            </div>
+            <div id="map-area" style="position: relative; height: 120px; background: #111;"></div>
+            <button onclick="lure()" style="width: 100%; height: 50px; background: #111; color: var(--green); border: none; border-top: 1px solid var(--green); cursor: pointer;">PLAY AUDIO</button>
+        </div>
+
+        <div style="position: absolute; left: 0; width: 15%; height: 100%;" onmouseover="togglePanel('reboot')"></div>
+        <div style="position: absolute; right: 0; width: 15%; height: 100%;" onmouseover="togglePanel('cam')"></div>
+    </div>
+
+    <script>
+        /** --- CONFIG & DATA --- **/
+        let currentState = 'MENU'; // MENU, GAME, PAUSE
+        let springPos = 10;
+        let currentCam = 1;
+        let systems = { audio: true, cams: true, vents: true };
+        let isRebooting = false;
+        let time = 0;
+
+        const nodes = [
+            { id: 1, x: 20, y: 10 }, { id: 2, x: 70, y: 30 }, { id: 3, x: 130, y: 10 },
+            { id: 4, x: 190, y: 50 }, { id: 5, x: 250, y: 20 }, { id: 6, x: 310, y: 10 },
+            { id: 7, x: 50, y: 80 }, { id: 8, x: 150, y: 90 }, { id: 9, x: 240, y: 70 }, { id: 10, x: 330, y: 90 }
+        ];
+
+        /** --- STATE MANAGER --- **/
+        function changeState(state) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('game-view').style.display = 'none';
+
+            if (state === 'MENU') {
+                document.getElementById('main-menu').classList.add('active');
+            } else if (state === 'GAME') {
+                document.getElementById('game-view').style.display = 'block';
+                if (currentState === 'MENU') initGame();
+            } else if (state === 'PAUSE') {
+                document.getElementById('pause-menu').classList.add('active');
+            }
+            currentState = state;
+        }
+
+        window.addEventListener('keydown', e => {
+            if (e.key === "Escape") {
+                if (currentState === 'GAME') changeState('PAUSE');
+                else if (currentState === 'PAUSE') changeState('GAME');
+            }
+        });
+
+        /** --- CORE LOGIC --- **/
+        function initGame() {
+            const map = document.getElementById('map-area');
+            map.innerHTML = '';
+            nodes.forEach(n => {
+                const btn = document.createElement('div');
+                btn.className = 'map-node';
+                btn.id = `node-${n.id}`;
+                btn.style.left = n.x + 'px'; btn.style.top = n.y + 'px';
+                btn.innerText = n.id;
+                btn.onclick = () => { if (systems.cams) { currentCam = n.id; document.getElementById('cam-id').innerText = n.id < 10 ? '0' + n.id : n.id; updateMap(); } };
+                map.appendChild(btn);
+            });
+            updateMap();
+            gameLoop();
+        }
+
+        function togglePanel(type) {
+            if (currentState !== 'GAME' || isRebooting) return;
+            document.getElementById('reboot-panel').classList.toggle('open', type === 'reboot');
+            document.getElementById('cam-panel').classList.toggle('open', type === 'cam');
+        }
+
+        function lure() {
+            if (!systems.audio || isRebooting) return;
+            if (Math.abs(springPos - currentCam) <= 2) springPos = currentCam;
+            if (Math.random() > 0.7) setSys('audio', false);
+            updateMap();
+        }
+
+        function setSys(name, ok) {
+            systems[name] = ok;
+            const el = document.getElementById(`s-${name}`);
+            el.innerText = ok ? "OK" : "ERROR";
+            el.style.color = ok ? "var(--green)" : "var(--red)";
+            if (name === 'vents') document.getElementById('alert').style.display = ok ? 'none' : 'block';
+        }
+
+        function reboot(name) {
+            isRebooting = true;
+            let duration = name === 'all' ? 6000 : 3000;
+            setTimeout(() => {
+                if (name === 'all') { setSys('audio', true); setSys('cams', true); setSys('vents', true); }
+                else setSys(name, true);
+                isRebooting = false;
+            }, duration);
+        }
+
+        function gameLoop() {
+            setInterval(() => {
+                if (currentState !== 'GAME') return;
+
+                // Springtrap AI
+                if (Math.random() > 0.8) {
+                    springPos--;
+                    if (springPos <= 0) jumpscare();
+                    updateMap();
+                }
+
+                // Random Failures
+                if (Math.random() > 0.97) setSys('vents', false);
+                if (Math.random() > 0.99) setSys('cams', false);
+            }, 4000);
+        }
+
+        function updateMap() {
+            document.querySelectorAll('.map-node').forEach(n => n.classList.remove('spring'));
+            if (systems.cams) {
+                const s = document.getElementById(`node-${springPos}`);
+                if (s) s.classList.add('spring');
+            }
+            document.getElementById('window-spring').style.display = springPos === 1 ? 'block' : 'none';
+        }
+
+        function jumpscare() {
+            changeState('MENU');
+            alert("SPRINGTRAP GOT YOU");
+            location.reload();
+        }
+
+        window.addEventListener('mousemove', e => {
+            if (currentState === 'GAME') {
+                let x = (e.clientX / window.innerWidth) - 0.5;
+                document.getElementById('office-container').style.transform = `translateX(${-x * 60}vw)`;
+            }
+        });
+    </script>
+</body>
+</html>

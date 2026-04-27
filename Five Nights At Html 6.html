@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FNAF 6 | Pizzeria Simulator Definitive</title>
+    <style>
+        :root {
+            --p-gold: #f1c40f;
+            --p-blue: #2980b9;
+            --p-red: #c0392b;
+            --bg: #0a0a0a;
+        }
+
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: 'Arial Black', sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* SCREEN SYSTEM */
+        .screen {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .active {
+            display: flex;
+        }
+
+        /* MAIN MENU */
+        #main-menu {
+            background: radial-gradient(circle, #222 0%, #000 100%);
+            justify-content: center;
+        }
+
+        .logo-box {
+            text-align: center;
+            border: 10px double var(--p-gold);
+            padding: 30px;
+            background: #000;
+            margin-bottom: 30px;
+        }
+
+        .menu-btn {
+            background: var(--p-blue);
+            color: #fff;
+            border: 4px solid #fff;
+            padding: 15px 40px;
+            margin: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            width: 300px;
+        }
+
+            .menu-btn:hover {
+                background: var(--p-gold);
+                color: #000;
+            }
+
+        /* PAUSE MENU */
+        #pause-menu {
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+        }
+
+        /* TYCOON UI */
+        #tycoon-view {
+            background: #eee;
+            color: #333;
+        }
+
+        .catalog {
+            display: grid;
+            grid-template-columns: repeat(3, 220px);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .item {
+            background: #fff;
+            border: 3px solid var(--p-blue);
+            padding: 10px;
+            text-align: center;
+            box-shadow: 5px 5px 0px #ccc;
+        }
+
+        .stats-strip {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #222;
+            color: var(--p-gold);
+            padding: 20px;
+            display: flex;
+            justify-content: space-around;
+            border-top: 5px solid var(--p-gold);
+        }
+
+        /* NIGHT OFFICE */
+        #office-view {
+            background: #050505;
+            display: none;
+        }
+
+        #terminal {
+            width: 800px;
+            height: 500px;
+            background: #0a0a0a;
+            border: 10px solid #222;
+            margin-top: 40px;
+            position: relative;
+            border-radius: 5px;
+            color: #0f0;
+            font-family: monospace;
+        }
+
+        .vent {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: #000;
+            border: 2px solid #111;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        #v-left {
+            left: -140px;
+        }
+
+        #v-right {
+            right: -140px;
+        }
+
+        .monitor-tab {
+            padding: 20px;
+            font-size: 1.2rem;
+        }
+
+        .btn-row {
+            display: flex;
+            background: #111;
+            border-bottom: 2px solid #333;
+        }
+
+        .tab-trigger {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            color: #0f0;
+            border: none;
+            cursor: pointer;
+            border-right: 1px solid #333;
+        }
+
+            .tab-trigger.active {
+                background: #0f0;
+                color: #000;
+            }
+
+        /* HUD */
+        .hud-night {
+            margin-top: 20px;
+            text-align: center;
+            border: 1px solid #333;
+            padding: 10px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-menu" class="screen active">
+        <div class="logo-box">
+            <h1 style="margin:0; color: var(--p-gold);">FREDDY FAZBEAR'S</h1>
+            <h2 style="margin:0; color: #fff;">PIZZERIA SIMULATOR</h2>
+        </div>
+        <button class="menu-btn" onclick="changeState('TYCOON')">NEW CAREER</button>
+        <button class="menu-btn">LOAD SAVE</button>
+        <button class="menu-btn" onclick="window.close()">EXIT</button>
+    </div>
+
+    <div id="pause-menu" class="screen">
+        <h1 style="color: var(--p-gold);">COFFEE BREAK</h1>
+        <button class="menu-btn" onclick="changeState(prevState)">RESUME</button>
+        <button class="menu-btn" onclick="location.reload()">QUIT TO MENU</button>
+    </div>
+
+    <div id="tycoon-view" class="screen">
+        <h2 style="color: var(--p-blue);">CATALOG: VOLUME 1</h2>
+        <div class="catalog">
+            <div class="item">
+                <h4>Sanitation Bucket</h4>
+                <p>Cost: $15<br>Risk: 0</p>
+                <button onclick="buy(15, 5, 0)">PURCHASE</button>
+            </div>
+            <div class="item">
+                <h4>Discount Ballpit</h4>
+                <p>Cost: $30<br>Risk: 5</p>
+                <button onclick="buy(30, 20, 5)">PURCHASE</button>
+            </div>
+            <div class="item">
+                <h4>The "Real" Deal</h4>
+                <p>Cost: $100<br>Risk: 25</p>
+                <button onclick="buy(100, 50, 25)">PURCHASE</button>
+            </div>
+        </div>
+        <div class="stats-strip">
+            <span>BUDGET: $<span id="m-val">1000</span></span>
+            <span>ATMOSPHERE: <span id="a-val">0</span></span>
+            <span>RISK: <span id="r-val">0</span></span>
+            <button class="menu-btn" style="width:auto; padding:5px 20px; font-size:1rem;" onclick="changeState('OFFICE')">START TASKS</button>
+        </div>
+    </div>
+
+    <div id="office-view" class="screen">
+        <div id="terminal">
+            <div id="v-left" class="vent"></div>
+            <div id="v-right" class="vent"></div>
+
+            <div class="btn-row">
+                <button class="tab-trigger active" onclick="tab('tasks')">TASKS</button>
+                <button class="tab-trigger" onclick="tab('motion')">MOTION</button>
+                <button class="tab-trigger" onclick="tab('audio')">AUDIO</button>
+            </div>
+
+            <div id="monitor-content" class="monitor-tab">
+                <h3>DAILY TASKS</h3>
+                <p id="task-status">Pending: 4</p>
+                <button id="work-btn" style="background:#0f0; padding:10px; border:none; cursor:pointer;" onclick="doTask()">PROCESS DATA</button>
+            </div>
+        </div>
+
+        <div class="hud-night">
+            TEMP: <span id="t-val">60</span>°F | FAN: <span id="f-stat">ON</span>
+            <br>
+            <button onclick="toggleFan()" style="margin-top:10px;">TOGGLE FAN (F)</button>
+        </div>
+    </div>
+
+    <script>
+        /** --- STATE CONTROLLER --- **/
+        let currentState = 'MENU';
+        let prevState = 'MENU';
+        let money = 1000, atmos = 0, risk = 0;
+        let nightActive = false, temp = 60, fan = true, tasks = 4;
+
+        function changeState(st) {
+            prevState = currentState;
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+
+            if (st === 'MENU') document.getElementById('main-menu').classList.add('active');
+            if (st === 'TYCOON') document.getElementById('tycoon-view').classList.add('active');
+            if (st === 'OFFICE') {
+                document.getElementById('office-view').classList.add('active');
+                document.getElementById('office-view').style.display = 'flex';
+                if (!nightActive) startNight();
+            }
+            if (st === 'PAUSE') document.getElementById('pause-menu').classList.add('active');
+
+            currentState = st;
+        }
+
+        /** --- TYCOON LOGIC --- **/
+        function buy(c, a, r) {
+            if (money >= c) {
+                money -= c; atmos += a; risk += r;
+                updateTycoonUI();
+                beep(600, 0.1);
+            }
+        }
+        function updateTycoonUI() {
+            document.getElementById('m-val').innerText = money;
+            document.getElementById('a-val').innerText = atmos;
+            document.getElementById('r-val').innerText = risk;
+        }
+
+        /** --- OFFICE LOGIC --- **/
+        function startNight() {
+            nightActive = true;
+            loop();
+        }
+
+        function tab(t) {
+            const cont = document.getElementById('monitor-content');
+            document.querySelectorAll('.tab-trigger').forEach(b => b.classList.remove('active'));
+
+            if (t === 'tasks') cont.innerHTML = `<h3>DAILY TASKS</h3><p id="task-status">Pending: ${tasks}</p><button onclick="doTask()">PROCESS DATA</button>`;
+            if (t === 'motion') cont.innerHTML = `<h3>MOTION SENSOR</h3><p>Scanning vents...</p><div style="border:1px solid #0f0; height:50px;"></div>`;
+            if (t === 'audio') cont.innerHTML = `<h3>AUDIO LURE</h3><button onclick="beep(400,0.5)">PLAY CHILD AUDIO</button>`;
+        }
+
+        function doTask() {
+            if (tasks <= 0) return;
+            document.getElementById('task-status').innerText = "WORKING...";
+            setTimeout(() => {
+                tasks--;
+                tab('tasks');
+                if (tasks === 0) { alert("SHIFT COMPLETE"); location.reload(); }
+            }, 3000);
+        }
+
+        function toggleFan() {
+            fan = !fan;
+            document.getElementById('f-stat').innerText = fan ? "ON" : "OFF";
+        }
+
+        function loop() {
+            if (currentState === 'OFFICE') {
+                // Temp logic
+                if (fan) temp = Math.max(60, temp - 0.05);
+                else temp += 0.15;
+                document.getElementById('t-val').innerText = Math.floor(temp);
+
+                if (temp > 110) { alert("OVERHEAT GAME OVER"); location.reload(); }
+            }
+            requestAnimationFrame(loop);
+        }
+
+        /** --- GLOBALS --- **/
+        const audio = new (window.AudioContext || window.webkitAudioContext)();
+        function beep(f, d) {
+            const o = audio.createOscillator(); const g = audio.createGain();
+            o.frequency.value = f; g.gain.value = 0.05;
+            o.connect(g); g.connect(audio.destination);
+            o.start(); o.stop(audio.currentTime + d);
+        }
+
+        window.addEventListener('keydown', e => {
+            if (e.key === "Escape") changeState(currentState === 'PAUSE' ? prevState : 'PAUSE');
+            if (e.key === "f" && currentState === 'OFFICE') toggleFan();
+        });
+    </script>
+</body>
+</html>

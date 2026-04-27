@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FNAF SL | HandUnit & Maintenance</title>
+    <style>
+        :root {
+            --sl-blue: #00f2ff;
+            --sl-yellow: #f1c40f;
+            --danger: #ff3333;
+        }
+
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+
+        /* SCREENS */
+        .screen {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .active {
+            display: flex;
+        }
+
+        /* MAIN MENU: THE BOOTUP */
+        #main-menu {
+            background: radial-gradient(circle, #051015 0%, #000 100%);
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            color: var(--sl-blue);
+            text-shadow: 0 0 20px var(--sl-blue);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .menu-btn {
+            background: none;
+            border: 1px solid var(--sl-blue);
+            color: var(--sl-blue);
+            padding: 15px 40px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.3s;
+            margin: 10px;
+        }
+
+            .menu-btn:hover {
+                background: var(--sl-blue);
+                color: #000;
+                box-shadow: 0 0 20px var(--sl-blue);
+            }
+
+        /* HANDUNIT NAME ENTRY */
+        #handunit-screen {
+            background: #4b0000;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(5, 50px);
+            gap: 10px;
+            background: #222;
+            padding: 20px;
+            border: 8px solid #c0392b;
+            border-radius: 10px;
+        }
+
+        .key {
+            width: 50px;
+            height: 50px;
+            background: #333;
+            border: 2px solid #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+            .key:active {
+                background: #fff;
+                color: #000;
+            }
+
+        /* PAUSE MENU */
+        #pause-overlay {
+            background: rgba(0,0,0,0.9);
+            border: 2px solid var(--sl-blue);
+            width: 300px;
+            height: 250px;
+            margin: auto;
+            z-index: 5000;
+            border-radius: 20px;
+        }
+
+        /* HUD & GAMEPLAY */
+        #game-hud {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 800;
+            opacity: 0;
+            transition: 1s;
+        }
+
+        .stat {
+            border: 1px solid var(--sl-blue);
+            padding: 10px;
+            background: rgba(0,0,0,0.7);
+        }
+
+        #stage {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: none;
+        }
+
+        .gallery {
+            width: 35%;
+            height: 50%;
+            background: #000;
+            border: 5px solid #222;
+            position: absolute;
+            top: 20%;
+        }
+
+        #ballora-gall {
+            left: 5%;
+        }
+
+        #foxy-gall {
+            right: 5%;
+        }
+
+        .flash-fx {
+            position: absolute;
+            inset: 0;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .btn-panel {
+            position: absolute;
+            bottom: 5%;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .circ-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-menu" class="screen active">
+        <div class="logo">SISTER LOCATION<br><span style="font-size: 1rem; color: #555;">CIRCUS BABY'S ENTERTAINMENT & RENTAL</span></div>
+        <button class="menu-btn" onclick="showScreen('handunit-screen')">PRIMARY SHIFT</button>
+        <button class="menu-btn">EXTRAS</button>
+    </div>
+
+    <div id="handunit-screen" class="screen">
+        <div style="background: var(--sl-yellow); color: #000; padding: 10px; margin-bottom: 20px; font-weight: bold; width: 300px; text-align: center;">
+            WELCOME: <span id="user-name">________</span>
+        </div>
+        <div class="keypad" id="entry-keys"></div>
+        <button class="menu-btn" style="border-color: #fff; color: #fff; margin-top: 20px;" onclick="startGame()">CONFIRM</button>
+    </div>
+
+    <div id="pause-overlay" class="screen">
+        <h2 style="color: var(--sl-blue);">SHIFT PAUSED</h2>
+        <button class="menu-btn" style="width: 200px;" onclick="resumeGame()">RESUME</button>
+        <button class="menu-btn" style="width: 200px;" onclick="location.reload()">QUIT</button>
+    </div>
+
+    <div id="game-hud">
+        <div class="stat">POWER: <span id="p-val">100</span>%</div>
+        <div class="stat" style="font-size: 1.5rem;"><span id="h-val">12</span> AM</div>
+    </div>
+
+    <div id="stage">
+        <div id="ballora-gall" class="gallery">
+            <div id="l-light" class="flash-fx"></div>
+            <div id="ballora-anim" style="font-size: 5rem; position: absolute; bottom: 10px; left: 30%; opacity: 0;">💃</div>
+        </div>
+        <div id="foxy-gall" class="gallery">
+            <div id="r-light" class="flash-fx"></div>
+            <div id="foxy-anim" style="font-size: 5rem; position: absolute; bottom: 10px; left: 30%; opacity: 0;">🦊</div>
+        </div>
+
+        <div class="btn-panel">
+            <div>
+                <button class="circ-btn" style="background: var(--sl-blue);" onmousedown="light('L', 1)" onmouseup="light('L', 0)"></button>
+                <button class="circ-btn" style="background: var(--sl-yellow);" onclick="shock('L')"></button>
+            </div>
+            <div>
+                <button class="circ-btn" style="background: var(--sl-blue);" onmousedown="light('R', 1)" onmouseup="light('R', 0)"></button>
+                <button class="circ-btn" style="background: var(--sl-yellow);" onclick="shock('R')"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /** --- INITIALIZE --- **/
+        const keys = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+        const keypad = document.getElementById('entry-keys');
+        keys.forEach(k => {
+            let d = document.createElement('div');
+            d.className = 'key'; d.innerText = k;
+            d.onclick = () => { playSfx(800, 0.1); document.getElementById('user-name').innerText = "Eggs Benedict"; };
+            keypad.appendChild(d);
+        });
+
+        /** --- AUDIO ENGINE --- **/
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSfx(f, d, type = 'square') {
+            const o = ctx.createOscillator(); const g = ctx.createGain();
+            o.type = type; o.frequency.value = f;
+            g.gain.setValueAtTime(0.05, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + d);
+            o.connect(g); g.connect(ctx.destination);
+            o.start(); o.stop(ctx.currentTime + d);
+        }
+
+        /** --- STATE ENGINE --- **/
+        let gameActive = false, paused = false;
+        let power = 100, time = 0;
+        let balloraAtWindow = false;
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            playSfx(400, 0.2);
+        }
+
+        function startGame() {
+            showScreen('stage');
+            document.getElementById('stage').style.display = 'block';
+            document.getElementById('game-hud').style.opacity = '1';
+            gameActive = true;
+            loop();
+        }
+
+        function resumeGame() {
+            paused = false;
+            document.getElementById('pause-overlay').classList.remove('active');
+        }
+
+        /** --- GAMEPLAY LOGIC --- **/
+        function light(side, state) {
+            if (!gameActive || paused) return;
+            const l = document.getElementById(side === 'L' ? 'l-light' : 'r-light');
+            const anim = document.getElementById(side === 'L' ? 'ballora-anim' : 'foxy-anim');
+
+            if (state) {
+                l.style.opacity = "0.3";
+                if (side === 'L' && balloraAtWindow) anim.style.opacity = "1";
+                playSfx(1000, 0.05, 'sine');
+            } else {
+                l.style.opacity = "0";
+                anim.style.opacity = "0";
+            }
+        }
+
+        function shock(side) {
+            if (!gameActive || paused || power < 5) return;
+            power -= 5;
+            playSfx(60, 0.8, 'sawtooth');
+            if (side === 'L') balloraAtWindow = false;
+        }
+
+        /** --- CORE LOOPS --- **/
+        let lastTime = Date.now();
+        function loop() {
+            if (gameActive && !paused) {
+                // Time progression
+                let now = Date.now();
+                if (now - lastTime > 10000) { // Every 10 seconds = 1 hour
+                    time++;
+                    lastTime = now;
+                    document.getElementById('h-val').innerText = time === 0 ? "12" : time;
+                    if (time >= 6) win();
+                }
+
+                // Power drain
+                power -= 0.02;
+                document.getElementById('p-val').innerText = Math.floor(power);
+                if (power <= 0) jumpscare("POWER OUTAGE");
+
+                // AI Logic
+                if (Math.random() > 0.99) balloraAtWindow = true;
+            }
+            requestAnimationFrame(loop);
+        }
+
+        window.addEventListener('keydown', e => {
+            if (e.key === "Escape" && gameActive) {
+                paused = !paused;
+                document.getElementById('pause-overlay').classList.toggle('active', paused);
+            }
+        });
+
+        function win() {
+            gameActive = false;
+            alert("6:00 AM - SHIFT COMPLETE");
+            location.reload();
+        }
+
+        function jumpscare(who) {
+            gameActive = false;
+            document.body.innerHTML = `<div style="background:#000; color:red; height:100vh; display:flex; align-items:center; justify-content:center; font-size:3rem;">${who}</div>`;
+            playSfx(40, 2, 'sawtooth');
+            setTimeout(() => location.reload(), 3000);
+        }
+
+    </script>
+</body>
+</html>

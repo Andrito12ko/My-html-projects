@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FNAF 2: HTML Masterpiece</title>
+    <style>
+        :root {
+            --fnaf-red: #bb0000;
+            --panel-bg: rgba(20, 20, 20, 0.95);
+        }
+
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* LAYERS & OVERLAYS */
+        .layer {
+            position: absolute;
+            inset: 0;
+            display: none;
+            pointer-events: none;
+        }
+
+        #crt-fx {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.1) 50%), linear-gradient(90deg, rgba(255,0,0,0.03), rgba(0,255,0,0.01), rgba(0,0,255,0.03));
+            z-index: 1000;
+            background-size: 100% 3px, 2px 100%;
+            pointer-events: none;
+        }
+
+        #static {
+            position: fixed;
+            inset: 0;
+            background: url('https://media.giphy.com/media/oEI9uWUqnW9Fe/giphy.gif');
+            opacity: 0.05;
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        /* THE OFFICE */
+        #viewport {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #office-canvas {
+            width: 200vw;
+            height: 100vh;
+            position: absolute;
+            left: -50vw;
+            background: linear-gradient(90deg, #050505 0%, #151515 25%, #222 50%, #151515 75%, #050505 100%);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            transition: transform 0.1s ease-out;
+        }
+
+        /* MASK & TABLET UI */
+        #mask-layer {
+            background: rgba(45, 25, 10, 0.9);
+            z-index: 500;
+            border: 100px solid #1a0f05;
+            border-radius: 50px;
+            box-shadow: inset 0 0 300px #000;
+        }
+
+        .eye-hole {
+            width: 180px;
+            height: 120px;
+            background: #000;
+            border-radius: 50%;
+            margin: 20vh 50px;
+            display: inline-block;
+            opacity: 0.5;
+        }
+
+        #tablet-ui {
+            position: absolute;
+            inset: 5%;
+            background: #050505;
+            border: 15px solid #222;
+            z-index: 600;
+            display: none;
+            flex-direction: column;
+        }
+
+        #cam-screen {
+            flex: 1;
+            border: 4px solid #333;
+            position: relative;
+            background: #000;
+        }
+
+        /* BUTTONS & HUD */
+        .trigger-zone {
+            position: absolute;
+            bottom: 0;
+            height: 60px;
+            width: 40%;
+            cursor: pointer;
+            z-index: 700;
+            text-align: center;
+            line-height: 60px;
+            font-weight: bold;
+            transition: 0.2s;
+            border-top: 2px solid rgba(255,255,255,0.2);
+        }
+
+            .trigger-zone:hover {
+                background: rgba(255,255,255,0.1);
+                border-top-color: #fff;
+            }
+
+        #left-trig {
+            left: 5%;
+        }
+
+        #right-trig {
+            right: 5%;
+        }
+
+        #hud {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            font-size: 2rem;
+            z-index: 800;
+            text-shadow: 2px 2px #000;
+        }
+
+        #power-hud {
+            position: fixed;
+            top: 20px;
+            left: 30px;
+            z-index: 800;
+        }
+
+        /* ANIMATRONICS */
+        .anim-office {
+            font-size: 12rem;
+            position: absolute;
+            transition: 0.3s;
+            pointer-events: none;
+        }
+
+        #hallway-light {
+            position: fixed;
+            inset: 0;
+            background: #fff;
+            opacity: 0;
+            z-index: 10;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="crt-fx"></div>
+    <div id="static"></div>
+
+    <div id="menu-screen" class="screen active" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
+        <h1 style="font-size: 5rem; letter-spacing: 10px; color: var(--fnaf-red);">FNAF 2</h1>
+        <p style="color: #444;">V.2.0 - HTML ULTIMATE</p>
+        <button onclick="initGame()" style="background: none; border: 1px solid #fff; color: #fff; padding: 15px 40px; font-family: inherit; cursor: pointer; font-size: 1.5rem;">NEW GAME</button>
+    </div>
+
+    <div id="game-container" style="display: none;">
+        <div id="hallway-light"></div>
+        <div id="mask-layer" class="layer">
+            <div style="text-align: center;"><div class="eye-hole"></div><div class="eye-hole"></div></div>
+        </div>
+
+        <div id="viewport">
+            <div id="office-canvas">
+                <div id="vent-l" style="width:200px; height:300px; background:#111; border:4px solid #222; position:relative;">
+                    <div id="spot-l" style="font-size: 5rem; position:absolute; bottom:10px; left:20px; display:none;">🐥</div>
+                </div>
+
+                <div id="hall-center" style="width:400px; height:500px; text-align:center; position:relative;">
+                    <div id="spot-hall" style="font-size: 10rem; opacity:0; transition:0.1s;">🐰</div>
+                    <div style="border: 2px solid #111; height:100%;"></div>
+                </div>
+
+                <div id="vent-r" style="width:200px; height:300px; background:#111; border:4px solid #222; position:relative;">
+                    <div id="spot-r" style="font-size: 5rem; position:absolute; bottom:10px; left:20px; display:none;">🐰</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tablet-ui">
+            <div id="cam-screen">
+                <div id="cam-label" style="padding: 10px; background: rgba(0,0,0,0.5);">CAM 11 - PRIZE CORNER</div>
+                <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); text-align: center;">
+                    <progress id="music-box" value="100" max="100" style="width: 300px; height: 30px;"></progress><br>
+                    <button onmousedown="windMusic(true)" onmouseup="windMusic(false)" style="margin-top: 10px; padding: 10px 40px; cursor: pointer;">WIND MUSIC BOX</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="hud">12 AM</div>
+        <div id="power-hud">Flashlight: <span id="bat">100</span>%</div>
+
+        <div id="left-trig" class="trigger-zone" onmouseover="toggleMask()">MASK</div>
+        <div id="right-trig" class="trigger-zone" onmouseover="toggleTablet()">MONITOR</div>
+    </div>
+
+    <script>
+        /** --- AUDIO ENGINE --- **/
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSfx(freq, type, duration, vol = 0.05) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type; osc.frequency.value = freq;
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + duration);
+        }
+
+        /** --- STATE VARIABLES --- **/
+        let gameActive = false, maskOn = false, tabletOpen = false, battery = 100, flash = false;
+        let musicBox = 100, winding = false, hour = 0, frames = 0;
+
+        // AI Tracking
+        let ai = {
+            bonnie: { pos: 0, path: [0, 1, 2, 3], level: 5 },
+            chica: { pos: 0, path: [0, 1, 2, 3], level: 5 },
+            puppet: { active: false }
+        };
+
+        /** --- CORE FUNCTIONS --- **/
+        function initGame() {
+            document.getElementById('menu-screen').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
+            gameActive = true;
+            mainLoop();
+        }
+
+        function toggleMask() {
+            if (tabletOpen) return;
+            maskOn = !maskOn;
+            document.getElementById('mask-layer').style.display = maskOn ? 'block' : 'none';
+            playSfx(100, 'square', 0.2);
+        }
+
+        function toggleTablet() {
+            if (maskOn) return;
+            tabletOpen = !tabletOpen;
+            document.getElementById('tablet-ui').style.display = tabletOpen ? 'flex' : 'none';
+            playSfx(400, 'sine', 0.1);
+        }
+
+        function windMusic(state) { winding = state; if (state) playSfx(800, 'triangle', 0.05, 0.02); }
+
+        window.addEventListener('keydown', e => { if (e.code === "ControlLeft") flash = true; });
+        window.addEventListener('keyup', e => { if (e.code === "ControlLeft") flash = false; });
+
+        /** --- THE ENGINE LOOP --- **/
+        function mainLoop() {
+            if (!gameActive) return;
+
+            // 1. Flashlight & Battery
+            const fLayer = document.getElementById('hallway-light');
+            if (flash && battery > 0 && !tabletOpen && !maskOn) {
+                battery -= 0.1;
+                fLayer.style.opacity = "0.8";
+                document.getElementById('spot-hall').style.opacity = (ai.bonnie.pos === 1) ? "1" : "0";
+            } else {
+                fLayer.style.opacity = "0";
+                document.getElementById('spot-hall').style.opacity = "0";
+            }
+            document.getElementById('bat').innerText = Math.floor(battery);
+
+            // 2. Music Box
+            if (winding) musicBox = Math.min(100, musicBox + 0.5);
+            else musicBox -= 0.08;
+            document.getElementById('music-box').value = musicBox;
+            if (musicBox <= 0) jumpscare("PUPPET");
+
+            // 3. AI Tick (Every 3 seconds)
+            frames++;
+            if (frames % 180 === 0) {
+                // Bonnie Movement
+                if (Math.random() * 20 < ai.bonnie.level) {
+                    ai.bonnie.pos = (ai.bonnie.pos + 1) % 4;
+                    if (ai.bonnie.pos === 3) playSfx(60, 'square', 0.5, 0.1); // Vent thud
+                }
+                // Chica Movement
+                if (Math.random() * 20 < ai.chica.level) {
+                    ai.chica.pos = (ai.chica.pos + 1) % 4;
+                }
+            }
+
+            // 4. Checking Vents
+            document.getElementById('spot-l').style.display = (ai.chica.pos === 3 && flash) ? "block" : "none";
+            document.getElementById('spot-r').style.display = (ai.bonnie.pos === 3 && flash) ? "block" : "none";
+
+            // 5. Attack Logic
+            if ((ai.bonnie.pos === 3 || ai.chica.pos === 3) && !maskOn && Math.random() > 0.99) {
+                jumpscare("ANIMATRONIC");
+            }
+
+            requestAnimationFrame(mainLoop);
+        }
+
+        function jumpscare(who) {
+            gameActive = false;
+            playSfx(40, 'sawtooth', 1, 0.2);
+            document.body.innerHTML = `<div style="background:#200; height:100vh; display:flex; align-items:center; justify-content:center; color:red; font-size:3rem;">YOU WERE KILLED BY ${who}</div>`;
+            setTimeout(() => location.reload(), 3000);
+        }
+
+        /** --- PANNING LOGIC --- **/
+        window.addEventListener('mousemove', e => {
+            if (!gameActive || tabletOpen) return;
+            const x = (e.clientX / window.innerWidth) - 0.5;
+            document.getElementById('office-canvas').style.transform = `translateX(${-x * 60}vw)`;
+        });
+
+    </script>
+</body>
+</html>
